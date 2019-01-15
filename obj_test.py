@@ -14,26 +14,26 @@ class MainPage(ttk.Tk):
         #label = ttk.Label(self,text="neki123")
         #label.grid(column=0,row=0)
         #print("obj initialized")
-        button = ttk.Button(container,text="nekibutton",command=self.deleteNekiPage)
+        button = ttk.Button(container,text="nekibutton",command= lambda: self.deleteNekiPage(container))
         button.grid(column=0,row=0)
 
         nekiPage = NekiPage(container,self)
 
         #self.showFrame(nekiPage)
 
-    def deleteNekiPage(self,*args):
+    def deleteNekiPage(self,container,*args):
         for arg in args:
             print(arg)
 
         self.nekiPage = None
-
-        nekiPage = NekiPage(self,self)
+        
+        nekiPage = NekiPage(container,self)
         self.showFrame(nekiPage)
         
 
         
     def showFrame(self,frame):
-        frame.grid(row=1,column=0,sticky=(N,S,W,E))
+        frame.grid(row=0,column=0,sticky=(N,S,W,E))
         frame.tkraise()
 
 
@@ -43,8 +43,14 @@ class NekiPage(ttk.Frame):
         ttk.Frame.__init__(self,parent)
 
         label = ttk.Label(self, text="Start Page")
-        label.grid(column=3,row=0,sticky=(E)) 
+        label.grid(column=0,row=0,sticky=(E)) 
+        nekiButton = ttk.Button(self,text="testButton123",command=self.deleteMe)
+        nekiButton.grid(column=0,row=0)
         print("nekiPage Initialized")  
+
+    def deleteMe(self):
+        if self:
+            self.destroy()
 
 
 page = MainPage()
