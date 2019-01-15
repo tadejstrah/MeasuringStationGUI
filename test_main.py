@@ -30,12 +30,12 @@ s2 = Style()
 s2.configure("neki.TFrame",background="yellow")
 testFrame = ttk.Frame(mainframe,style="neki.TFrame",padding="100 100 100 100")
 testFrame.grid(column=1,row=0,sticky=(N,S))
- 
+
 #testFrame.pack(side=LEFT,expand=YES,fill=BOTH)
 
 s3 = Style()
 s3.configure("bhus.TFrame",background="green")
-testFrame2=ttk.Frame(mainframe,style="bhus.TFrame")
+testFrame2=ttk.Frame(mainframe,style="bhus.TFrame",borderwidth=10)
 testFrame2.grid(column=0,row=0,sticky=(N,E,S,W))
 testFrame2.rowconfigure(0,weight=1)
 testFrame2.columnconfigure(0,weight=1)
