@@ -17,7 +17,6 @@ class SeaofBTCapp(tk.Tk):
         container.grid_columnconfigure(0, weight=1)
         container.configure(background="red",borderwidth=10)
         
-
         self.frames = {}
 
         frame = StartPage(container, self)
@@ -41,7 +40,6 @@ class StartPage(tk.Frame):
         label = tk.Label(self, text="Start Page", font=LARGE_FONT)
         label.grid(column=0,row=0,sticky=(E))
        # label.pack(pady=10,padx=10)
-
 
 app = SeaofBTCapp()
 app.columnconfigure(0,weight=1)
