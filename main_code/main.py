@@ -4,7 +4,7 @@ import tkinter as ttk
 from tkinter import N,S,E,W
 
 import setupPage as SP
-import mainPage as MP
+import mainPage as MP 
 
 
 class measureGUI(ttk.Tk):
