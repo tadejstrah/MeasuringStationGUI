@@ -2,6 +2,9 @@
 	"folders": [
 		{
 			"path": "."
+		},
+		{
+			"path": "C:\\Users\\tadej\\GIT\\MeasuringStationGUI\\main_code"
 		}
 	],
 	"settings": {}

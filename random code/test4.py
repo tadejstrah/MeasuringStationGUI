@@ -37,9 +37,9 @@ class SeaofBTCapp(tk.Tk):
 
         self.show_frame(StartPage)
 
-    def show_frame(self, cont):
+    def show_frame(self, container):
 
-        frame = self.frames[cont]
+        frame = self.frames[container]
         frame.lift()
 
         
