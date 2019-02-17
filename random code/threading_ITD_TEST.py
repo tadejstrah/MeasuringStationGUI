@@ -41,6 +41,8 @@ def animate(interval,*fargs):
         xar.append(interval)
         line.set_data(xar,yar)
         ax1.set_xlim(0,interval+1)
+        print(yar)
+        #ax1.plot(yar)
     except:
         print("queue ne dela")
 
@@ -48,14 +50,15 @@ def animate(interval,*fargs):
 def getRandomData(queue):
     while True:
         queue.put(randint(0,100))
-        print("getrndomdata")
-        time.sleep(0.1)
+       # print("getrndomdata")
+        time.sleep(0.5)
 
 plotcanvas = FigureCanvasTkAgg(fig, root)
 plotcanvas.get_tk_widget().grid(column=1, row=1)
 ani = animation.FuncAnimation(fig, animate ,fargs=(q,),interval=100, blit=False)
 
 randomThread = threading.Thread(target=getRandomData, args=(q,) )
+randomThread.daemon = True
 randomThread.start()
 
 

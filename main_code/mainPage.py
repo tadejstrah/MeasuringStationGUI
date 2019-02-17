@@ -1,50 +1,70 @@
 
-import tkinter
+#from tkinter import *
 import tkinter as ttk
 import setupPage as SP
+from random import randint
 
-#import matplotlib
-#import matplotlib.backends.tkagg as tkagg
-from matplotlib import pyplot as plt
-import matplotlib.animation as animation
-from matplotlib import style
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg#, NavigationToolbar2TkAgg
-from matplotlib.figure import Figure
+import matplotlib
+
+import matplotlib.pyplot as plt
 #import matplotlib.animation as animation
+from matplotlib import style
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from matplotlib.figure import Figure
+from matplotlib.animation import FuncAnimation
+
+import threading
+import time
+from queue import Queue
+
+
+class GraphLine():
+    def __init__(self):
+        self.XData = [0]
+        self.YData = [0]
+
+#graphLines = [GraphLine()]
 
 class mainPage(ttk.Frame):
-    '''
-    xarr = []
-    yarr = []
-    fig = None
-    ax1 = None
-    line = None
 
-    def animate(self,i):
-        self.yarr.append(99)
-        self.xarr.append(i)
-        self.line.set_data(self.xarr,self.yarr)
-        self.ax1.plot(self.xarr,self.yarr)
-    '''
-    def __init__(self, parent, controller):
+    def __init__(self, parent, controller, dataClass):
+
+
         ttk.Frame.__init__(self,parent)
+
+        self._dataClass = dataClass
+
+        fig = plt.Figure()
+        ax1 = fig.add_subplot(111)
+
+        self.hLine, = ax1.plot(0, 0)
+
+        plotCanvas = FigureCanvasTkAgg(fig, self)
+        plotCanvas.get_tk_widget().grid(column=0, row=0)
+
+        self.ani = FuncAnimation(fig, self. run, interval=500,repeat=True)
 
         testLabel = ttk.Label(self,text="test label on main page")
         testLabel.grid()
 
         testButton = ttk.Button(self, text="test button on main page",command=lambda:controller.showFrame(SP.setupPage))
         testButton.grid() 
-        ''' 
-        self.xarr = []
-        self.yarr = []
 
-        style.use("ggplot")
-        self. fig = plt.figure(figsize=(14,4.5), dpi=100)
-        self.ax1 = self.fig.add_subplot(1,1,1)
-        self.line = self.ax1.plot(self.xarr,self.yarr,"r",marker="o")
+    def run(self,i):
+        self.hLine.set_data(self._dataClass.XData, self._dataClass.YData)
+        print("setting data")
+        self.hLine.axes.relim()
+        self.hLine.axes.autoscale_view()
 
+class SerialRead(threading.Thread):
+    def __init__(self,dataClass):
+        threading.Thread.__init__(self)
 
-        plotcanvas = FigureCanvasTkAgg(self.fig,self)
-        plotcanvas.get_tk_widget().grid(column=0,row=3)
-        ani = animation.FuncAnimation(self.fig, self.animate,interval=1000)
-        '''
+        self._dataClass = dataClass
+    
+    def run(self):
+        while True:
+            print("updating data")
+            self._dataClass.XData.append(self._dataClass.XData[-1] + 1)
+            self._dataClass.YData.append(randint(0,256))
+            time.sleep(0.1)

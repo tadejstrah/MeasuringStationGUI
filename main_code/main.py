@@ -22,7 +22,14 @@ class measureGUI(ttk.Tk):
         self.frameNames = [SP.setupPage,MP.mainPage]
         self.frames = {}
         for F in (self.frameNames):
-            frame = F(container,self) #container je parent frejma, self je pa controller frejma
+            if F == MP.mainPage:
+                data = MP.GraphLine()
+                frame = F(container,self,data)
+                serialReader = MP.SerialRead(data)
+                serialReader.daemon = True
+                serialReader.start()
+            else:
+                frame = F(container,self) #container je parent frejma, self je pa controller frejma
             self.frames[F] = frame
             frame.grid(row=0,column=0,sticky=(N,S,W,E))
             frame.rowconfigure(0,weight=1)
@@ -41,7 +48,7 @@ def main():
     app = measureGUI()
     app.rowconfigure(0,weight=1)
     app.columnconfigure(0,weight=1)
-    app.geometry("400x400")
+    app.geometry("500x500")
     app.mainloop()
 
 if __name__ == "__main__":
