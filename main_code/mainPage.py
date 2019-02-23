@@ -1,13 +1,11 @@
-
-#from tkinter import *
 import tkinter as ttk
 import setupPage as SP
 from random import randint
+from tkinter import N,S,E,W
+
 
 import matplotlib
-
 import matplotlib.pyplot as plt
-#import matplotlib.animation as animation
 from matplotlib import style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
@@ -18,17 +16,26 @@ import time
 from queue import Queue
 
 
-class GraphLine():
-    def __init__(self):
-        self.XData = [0]
-        self.YData = [0]
+
 
 #graphLines = [GraphLine()]
 
 class mainPage(ttk.Frame):
 
+
+
+    def changeShouldReadState(self):
+        self.shouldSerialRead
+        self.shouldSerialRead = not self.shouldSerialRead
+        print("changing state")
+
+    def shouldSerialReadFunc(self):
+        return self.shouldSerialRead
+
+
     def __init__(self, parent, controller, dataClass):
 
+        self.shouldSerialRead= True
 
         ttk.Frame.__init__(self,parent)
 
@@ -40,7 +47,7 @@ class mainPage(ttk.Frame):
         self.hLine, = ax1.plot(0, 0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)
-        plotCanvas.get_tk_widget().grid(column=0, row=0)
+        plotCanvas.get_tk_widget().grid(column=0, row=0, sticky=(N,S,E,W))
 
         self.ani = FuncAnimation(fig, self. run, interval=500,repeat=True)
 
@@ -50,21 +57,13 @@ class mainPage(ttk.Frame):
         testButton = ttk.Button(self, text="test button on main page",command=lambda:controller.showFrame(SP.setupPage))
         testButton.grid() 
 
+        startSerialButton = ttk.Button(self,text="start/stop serial", command=lambda:self.changeShouldReadState())
+        startSerialButton.grid()
+
     def run(self,i):
         self.hLine.set_data(self._dataClass.XData, self._dataClass.YData)
-        print("setting data")
+        #print("setting data")
+       # print(shouldSerialRead)
         self.hLine.axes.relim()
         self.hLine.axes.autoscale_view()
 
-class SerialRead(threading.Thread):
-    def __init__(self,dataClass):
-        threading.Thread.__init__(self)
-
-        self._dataClass = dataClass
-    
-    def run(self):
-        while True:
-            print("updating data")
-            self._dataClass.XData.append(self._dataClass.XData[-1] + 1)
-            self._dataClass.YData.append(randint(0,256))
-            time.sleep(0.1)

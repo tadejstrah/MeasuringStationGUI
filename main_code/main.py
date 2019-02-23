@@ -5,7 +5,9 @@ from tkinter import N,S,E,W
 
 import setupPage as SP
 import mainPage as MP 
-
+import SerialReader
+import time
+import GraphLine
 
 class measureGUI(ttk.Tk):
     def __init__(self,*args,**kwargs):
@@ -23,11 +25,13 @@ class measureGUI(ttk.Tk):
         self.frames = {}
         for F in (self.frameNames):
             if F == MP.mainPage:
-                data = MP.GraphLine()
+                data = GraphLine.GraphLine()
                 frame = F(container,self,data)
-                serialReader = MP.SerialRead(data)
+                serialReader = SerialReader.SerialRead(data,frame)
                 serialReader.daemon = True
                 serialReader.start()
+                #time.sleep(0.0001)
+                #serialReader.join()
             else:
                 frame = F(container,self) #container je parent frejma, self je pa controller frejma
             self.frames[F] = frame
@@ -48,7 +52,7 @@ def main():
     app = measureGUI()
     app.rowconfigure(0,weight=1)
     app.columnconfigure(0,weight=1)
-    app.geometry("500x500")
+    app.geometry("1000x500")
     app.mainloop()
 
 if __name__ == "__main__":
