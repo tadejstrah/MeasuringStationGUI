@@ -15,41 +15,32 @@ import threading
 import time
 from queue import Queue
 
-
-
-
-#graphLines = [GraphLine()]
-
 class mainPage(ttk.Frame):
 
-
+    
 
     def changeShouldReadState(self):
         self.shouldSerialRead
         self.shouldSerialRead = not self.shouldSerialRead
-        print("changing state")
 
-    def shouldSerialReadFunc(self):
+    def shouldSerialReadFunc(self):   #serialReader počekira tole funkcijo da začne/neha delat
         return self.shouldSerialRead
 
 
     def __init__(self, parent, controller, dataClass):
-
-        self.shouldSerialRead= True
-
         ttk.Frame.__init__(self,parent)
 
+        self.shouldSerialRead= False
         self._dataClass = dataClass
 
         fig = plt.Figure()
         ax1 = fig.add_subplot(111)
-
         self.hLine, = ax1.plot(0, 0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)
         plotCanvas.get_tk_widget().grid(column=0, row=0, sticky=(N,S,E,W))
 
-        self.ani = FuncAnimation(fig, self. run, interval=500,repeat=True)
+        self.ani = FuncAnimation(fig, self. run, interval=100,repeat=True)
 
         testLabel = ttk.Label(self,text="test label on main page")
         testLabel.grid()
@@ -60,10 +51,8 @@ class mainPage(ttk.Frame):
         startSerialButton = ttk.Button(self,text="start/stop serial", command=lambda:self.changeShouldReadState())
         startSerialButton.grid()
 
-    def run(self,i):
+    def run(self,i):  #funkcija je klicana vsakih n miliskeund 
         self.hLine.set_data(self._dataClass.XData, self._dataClass.YData)
-        #print("setting data")
-       # print(shouldSerialRead)
         self.hLine.axes.relim()
         self.hLine.axes.autoscale_view()
 
