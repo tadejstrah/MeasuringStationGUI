@@ -1,5 +1,6 @@
 import serial.tools.list_ports
 import serial
+import tkinter as ttk
 
 ports = list(serial.tools.list_ports.comports(include_links=False))
 port = ""
@@ -9,9 +10,20 @@ if len(ports) == 0:
     exit()
 for p in ports:
         print(p)
-        ports_array.append(p)
+        ports_array.append(str(p))
         port = str(p)[0:4]       
 
+#if len(ports) == 1:
+ #   print("Reading from port:" + ports[0] + " as it is the only one available.")
+
+
+
+if len(ports) == 1:
+    print("neki")
+    print(ports_array)
+    top = ttk.Toplevel()
+
+print("Reading from port:" + port)
 ser = serial.Serial(port,9600)
 
 line = ""
@@ -29,7 +41,7 @@ while 1:
     else:
         #print(line)
         time = float(line[0:6])
-        print("Time = "+str(time))
+        #print("Time = "+str(time))
         line = ""
 
 
