@@ -19,6 +19,7 @@ class mainPage(ttk.Frame):
     def changeShouldReadState(self):
         self.shouldSerialRead
         self.shouldSerialRead = not self.shouldSerialRead
+        #self._serialReaderRefference.lineArray = []
 
     def shouldSerialReadFunc(self):   #serialReader počekira tole funkcijo da začne/neha delat
         return self.shouldSerialRead
@@ -30,6 +31,8 @@ class mainPage(ttk.Frame):
         self.shouldSerialRead= False
         self._dataClass = dataClass
 
+        #self._serialReaderRefference = serialReader
+
         toolbarContainer = ttk.Frame(self)
         toolbarContainer.grid(sticky=W, row=10, column=0)
 
@@ -38,6 +41,8 @@ class mainPage(ttk.Frame):
         fig = plt.Figure()
         ax1 = fig.add_subplot(111)
         self.hLine, = ax1.plot(0, 0)
+
+        self.nLine, = ax1.plot(0,0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)
         plotCanvas.get_tk_widget().grid(column=0, row=0, sticky=(N,S,E,W))
@@ -65,7 +70,9 @@ class mainPage(ttk.Frame):
         #print("drawing to graph")
         #print(self._dataClass)
         if self._dataClass:
-            self.hLine.set_data(self._dataClass[0].XData, self._dataClass[0].YData)
+            #print(self._dataClass[5].XData)
+            self.hLine.set_data(self._dataClass[3].XData, self._dataClass[3].YData)
+            self.nLine.set_data(self._dataClass[2].XData, self._dataClass[2].YData)
             #print(self._dataClass[0]._color)
             #print(self._dataClass[0].XData)
         self.hLine.axes.relim()

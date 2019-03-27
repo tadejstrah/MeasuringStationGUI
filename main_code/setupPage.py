@@ -62,6 +62,9 @@ class setupPage(ttk.Frame):
             graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get())
             self._dataArrRefference.append(graphLine)
 
+        #print(MP.mainPage)
+        if not MP.mainPage in controller.frames.keys():
+            controller.initMainPage()
         controller.showFrame(MP.mainPage)
 
 

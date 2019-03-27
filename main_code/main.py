@@ -15,41 +15,51 @@ class measureGUI(ttk.Tk):
         ttk.Tk.wm_title(self,"measureGUI")
 
 #container frame setup
-        container = ttk.Frame(self)
-        container.grid(row=0,column=0,sticky = (N,S,E,W))
-        container.rowconfigure(0,weight=1)
-        container.columnconfigure(0,weight=1)
+        self.container = ttk.Frame(self)
+        self.container.grid(row=0,column=0,sticky = (N,S,E,W))
+        self.container.rowconfigure(0,weight=1)
+        self.container.columnconfigure(0,weight=1)
 
 #frames manager setup
         self.frameNames = [SP.setupPage,MP.mainPage]
         self.frames = {}
 
-        data = []
+        self.data = []
 
-        mainPageObj = MP.mainPage(container, self, data) #container je parent frejma, self je controller, data je refference na graph Lines
-        self.frames[MP.mainPage] = mainPageObj
-        mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
-        mainPageObj.rowconfigure(0,weight=1)
-        mainPageObj.columnconfigure(0,weight=1)
 
-        serialReader = SerialReader.SerialRead(data, mainPageObj)
-        serialReader.daemon = True
-        serialReader.start()
-
-        setupPageObj = SP.setupPage(container, self, data)
+        setupPageObj = SP.setupPage(self.container, self, self.data)
         self.frames[SP.setupPage] = setupPageObj
         setupPageObj.grid(row=0, column=0, sticky=(N,S,W,E))
         setupPageObj.rowconfigure(0,weight=1)
         setupPageObj.columnconfigure(0,weight=1)
 
+        #self.serialReader = None
+       # self.initMainPage()
+
 
         self.showFrame(SP.setupPage) #initiall page je setupPage
 
-
     def showFrame(self,frameToShowName):
+        #print(frameToShowName)
+        #print(self.frames.keys())
         frame = self.frames[frameToShowName]
         frame.lift()
 
+    def initMainPage(self):
+        #("init main page")
+        mainPageObj = MP.mainPage(self.container, self, self.data) #container je parent frejma, self je controller, data je refference na graph Lines
+        self.frames[MP.mainPage] = mainPageObj
+        mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
+        mainPageObj.rowconfigure(0,weight=1)
+        mainPageObj.columnconfigure(0,weight=1)
+
+                
+        serialReader = SerialReader.SerialRead(self.data, mainPageObj)
+        serialReader.daemon = True
+        serialReader.start()
+
+
+        #pass
 
 """
         for F in (self.frameNames):
