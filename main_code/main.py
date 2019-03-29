@@ -1,7 +1,8 @@
 
 import tkinter
 import tkinter as ttk
-from tkinter import N,S,E,W
+from tkinter import N,S,E,W,END,INSERT
+
 
 import setupPage as SP
 import mainPage as MP 
@@ -19,6 +20,24 @@ class measureGUI(ttk.Tk):
         self.container.grid(row=0,column=0,sticky = (N,S,E,W))
         self.container.rowconfigure(0,weight=1)
         self.container.columnconfigure(0,weight=1)
+
+        self.printConsole = ttk.Frame(self,height=100)
+        self.printConsole.grid(row=1,column=0,sticky=(N,S,W,E))
+        self.printConsole.columnconfigure(0,weight=1)
+        self.printConsole.rowconfigure(0,weight=1)
+        self.printConsole.grid_propagate(False)
+
+        text = ttk.Text(self.printConsole,borderwidth=3,state="disabled")
+        text.config(undo=True,wrap="word")
+        text.grid(row=0,column=0,sticky=(S,W,E),padx=2,pady=2)
+        text.configure(state="normal")
+        text.insert(END,"Hello World\n")
+        text.insert(END,"This is print console \nImportant information will be displayed here in the future")
+        text.configure(state="disabled")
+
+        scrollbar = ttk.Scrollbar(self.printConsole,command=text.yview)
+        scrollbar.grid(row=0,column=1,sticky=(N,S,W,E))
+        text["yscrollcommand"] = scrollbar.set
 
 #frames manager setup
         self.frameNames = [SP.setupPage,MP.mainPage]
@@ -52,35 +71,10 @@ class measureGUI(ttk.Tk):
         mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
         mainPageObj.rowconfigure(0,weight=1)
         mainPageObj.columnconfigure(0,weight=1)
-
-                
+          
         serialReader = SerialReader.SerialRead(self.data, mainPageObj)
         serialReader.daemon = True
         serialReader.start()
-
-
-        #pass
-
-"""
-        for F in (self.frameNames):
-            if F == MP.mainPage:
-                data = GraphLine.GraphLine("red",0)
-                frame = F(container,self,data)
-
-                serialReader = SerialReader.SerialRead(data,frame)
-                serialReader.daemon = True
-                serialReader.start()
-            else:
-                frame = F(container,self) #container je parent frejma, self je pa controller frejma
-            self.frames[F] = frame
-            frame.grid(row=0,column=0,sticky=(N,S,W,E))
-            frame.rowconfigure(0,weight=1)
-            frame.columnconfigure(0,weight=1)
-"""
-       
-
-
-
 
 
 def main():
