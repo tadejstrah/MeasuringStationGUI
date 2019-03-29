@@ -32,49 +32,58 @@ class mainPage(ttk.Frame):
         self._dataClass = dataClass
 
         #self._serialReaderRefference = serialReader
-
+        
         toolbarContainer = ttk.Frame(self)
-        toolbarContainer.grid(sticky=W, row=10, column=0)
+        toolbarContainer.grid(sticky=W, row=2, column=0)
 
         #row=3,column=0,sticky=(N,S,W,E)
 
         fig = plt.Figure()
         ax1 = fig.add_subplot(111)
-        self.hLine, = ax1.plot(0, 0)
+        self.line1, = ax1.plot(0, 0)
 
-        self.nLine, = ax1.plot(0,0)
+        ax2 = ax1.twinx()
+        self.line2, = ax2.plot(0,0)
+        self.line2.set_color("red")
+        #self.nLine, = ax1.plot(0,0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)
         plotCanvas.get_tk_widget().grid(column=0, row=0, sticky=(N,S,E,W))
 
         toolbar = NavigationToolbar2Tk(plotCanvas, toolbarContainer)
-       # toolbar.grid()
-        #toolbar.pack()
-        print(toolbar)
+
         toolbar.lift()
         toolbar.update()
 
         
         self.ani = FuncAnimation(fig, self. run, interval=100,repeat=True)
 
-        testLabel = ttk.Label(self,text="test label on main page")
-        testLabel.grid()
+        commandsFrame = ttk.Frame(self)
+        commandsFrame.grid(column=1,row=0,sticky=(E,W,N))
 
-        testButton = ttk.Button(self, text="test button on main page",command=lambda:controller.showFrame(SP.setupPage))
-        testButton.grid() 
+       # testLabel = ttk.Label(commandsFrame,text="test label on main page")
+       # testLabel.grid(column=0,row=0)
 
-        startSerialButton = ttk.Button(self,text="start/stop serial", command=lambda:self.changeShouldReadState())
-        startSerialButton.grid()
+        testButton = ttk.Button(commandsFrame, text="test button on main page",command=lambda:controller.showFrame(SP.setupPage))
+        testButton.grid(column=1,row=1) 
+
+        startSerialButton = ttk.Button(commandsFrame,text="start/stop serial", command=lambda:self.changeShouldReadState())
+        startSerialButton.grid(column=1,row=2)
         
+        
+
+
     def run(self,i):  #funkcija je klicana vsakih n miliskeund 
-        #print("drawing to graph")
-        #print(self._dataClass)
         if self._dataClass:
-            #print(self._dataClass[5].XData)
-            self.hLine.set_data(self._dataClass[3].XData, self._dataClass[3].YData)
-            self.nLine.set_data(self._dataClass[2].XData, self._dataClass[2].YData)
+            self.line1.set_data(self._dataClass[1].XData, self._dataClass[1].YData)
+            #self.line1.set_data(self._dataClass[2].XData, self._dataClass[2].YData)
+            self.line2.set_data(self._dataClass[5].XData, self._dataClass[5].YData)
             #print(self._dataClass[0]._color)
             #print(self._dataClass[0].XData)
-        self.hLine.axes.relim()
-        self.hLine.axes.autoscale_view()
 
+        
+        self.line1.axes.relim()
+        self.line1.axes.autoscale_view()
+        self.line2.axes.relim()
+        self.line2.axes.autoscale_view()
+        

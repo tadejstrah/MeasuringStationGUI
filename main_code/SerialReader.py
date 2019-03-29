@@ -73,11 +73,12 @@ class SerialRead(threading.Thread):
 
             if shouldRead:
                 timeArd = 0
+                if not self.ser: break
                 if not self.ser.isOpen() : break
                 try:                        
                     inputChar = self.ser.read().decode("utf-8")
                 except serial.serialutil.SerialException:
-                    print("lost serial connection")
+                    print("Lost serial connection")
                 except:
                     print("something strange happened to serial connection")
                 if inputChar != "\n":
@@ -109,7 +110,8 @@ class SerialRead(threading.Thread):
                             #self._dataClass[0].XData.append(timeArd - diff)
                             #self._dataClass[0].YData.append(self.lineArray[5])
             else:
-                if self.ser.isOpen():
-                    self.ser.read()
+                if self.ser:
+                    if self.ser.isOpen():
+                        self.ser.read()
                 
     
