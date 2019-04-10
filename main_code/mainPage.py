@@ -45,6 +45,7 @@ class mainPage(ttk.Frame):
         ax2 = ax1.twinx()
         self.line2, = ax2.plot(0,0)
         self.line2.set_color("red")
+        
         #self.nLine, = ax1.plot(0,0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)

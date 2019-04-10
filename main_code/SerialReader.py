@@ -8,18 +8,19 @@ import tkinter as ttk
 from tkinter.ttk import Combobox
 
 class SerialRead(threading.Thread):
-    def __init__(self,dataClass, mainPage):
+    def __init__(self,dataClass, mainPage, parent):
 
         ports = list(serial.tools.list_ports.comports(include_links=False))
         ports_array = []
 
         self.port = ""
         self.ser = None
-
+        self.parent = parent
         for p in ports:
-            ports_array.append(str(p)[0:4])
+            ports_array.append(str(p).split(" ")[0])
         if len(ports) == 0:
-            print("no com ports were found")
+            parent.printToConsole("No com ports were found",False)
+            #print("no com ports were found")
             #top = ttk.Toplevel()
         elif len(ports) > 1:  #če je več com portov se odpre dialog za izbiro
             top = ttk.Toplevel()
@@ -35,8 +36,8 @@ class SerialRead(threading.Thread):
         elif len(ports) == 1:
             self.port = ports_array[0]
             self.ser = serial.Serial(self.port,9600)
-            print(self.ser.isOpen())
-
+            parent.printToConsole("Serial connection opened" if self.ser.isOpen() else "Serial connection not opened",False)
+            #print(self.ser.isOpen())
 
 
 
@@ -62,11 +63,13 @@ class SerialRead(threading.Thread):
         #sizeOfArr = 1
         shouldCalcDiff = False
         diff = 0
-
+        #time.sleep(0.1)
         while True:
+            #time.sleep(0.01)
             shouldRead = self.mainPageRefference.shouldSerialReadFunc()
             if not shouldRead == prev: #če pride do spremembe state-a (pauza, zdaj) serial branja pol pobriše srial input ap zračuna difference cajta k se spet zalaufa read
-
+                self.ser.flushInput()
+                self.ser.read()
                 prev = shouldRead
                 shouldCalcDiff = True
                 passOne = True
@@ -78,19 +81,23 @@ class SerialRead(threading.Thread):
                 try:                        
                     inputChar = self.ser.read().decode("utf-8")
                 except serial.serialutil.SerialException:
-                    print("Lost serial connection")
+                    self.parent.printToConsole("Lost serial connection",False)
+                    #print("Lost serial connection")
                 except:
-                    print("something strange happened to serial connection")
+                    self.parent.printToConsole("Something unexpected happened to serial connection.",False)
+                    #print("something strange happened to serial connection")
                 if inputChar != "\n":
                     self.line += inputChar
                 else:
                     #print(repr(self.line))
                     self.lineArray = self.line.strip().split("\t")
-                    print(self.lineArray)
+                    #self.parent.printToConsole(self.lineArray,True)
+                    #print(self.lineArray)
                     try:
                         timeArd = float(self.lineArray[0])
                     except:
-                        print("problem with conversion to float")
+                        self.parent.printToConsole("Problem with conversion to float",False)
+                        #print("problem with conversion to float")
                     self.line = ""
 
                     if self._dataClass:
@@ -110,8 +117,11 @@ class SerialRead(threading.Thread):
                             #self._dataClass[0].XData.append(timeArd - diff)
                             #self._dataClass[0].YData.append(self.lineArray[5])
             else:
-                if self.ser:
-                    if self.ser.isOpen():
-                        self.ser.read()
+                time.sleep(0.1)
+                pass
+                #if self.ser:
+                #    if self.ser.isOpen():
+                  #      self.ser.flushInput()
+                        #self.ser.read()
                 
     

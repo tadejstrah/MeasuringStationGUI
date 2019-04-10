@@ -57,12 +57,10 @@ class setupPage(ttk.Frame):
         testButton.grid()
 
     def goToMainPageButtonAction(self,controller):
-        #print(self._dataArrRefference)
         for i in range(len(self.labels)):
             graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get())
             self._dataArrRefference.append(graphLine)
 
-        #print(MP.mainPage)
         if not MP.mainPage in controller.frames.keys():
             controller.initMainPage()
         controller.showFrame(MP.mainPage)
@@ -71,8 +69,11 @@ class setupPage(ttk.Frame):
 
 
     def on_dropDownMenu_select(self,event=None):
-        
-        self.numberOfParams = int(event.widget.get())
+        print(event)
+        if event:
+            self.numberOfParams = int(event.widget.get())
+        else:
+            self.numberOfParams = 6
         for i in range(self.numberOfParams):
             self.labels.append(Label())
             self.colorComboBoxes.append(Combobox())
@@ -94,7 +95,7 @@ class setupPage(ttk.Frame):
             self.colorComboBoxes[i].grid(row=i,column=2)
 
     def on_colorMenuDropdown_select(self,event):
-        self.labels[int(event.widget.grid_info()["row"])].configure(background=event.widget.get()) #iz pozicije comboboxa na gridu najde indeks labela v arrayu in mu accordingly changa barvo
-
+        if event:
+            self.labels[int(event.widget.grid_info()["row"])].configure(background=event.widget.get()) #iz pozicije comboboxa na gridu najde indeks labela v arrayu in mu accordingly changa barvo
         
  
