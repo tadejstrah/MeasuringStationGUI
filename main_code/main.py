@@ -50,7 +50,7 @@ class measureGUI(ttk.Tk):
         self.printConsole.grid_propagate(False)
 
 
-        self.dataConsole = ttk.Text(self.printConsole, borderwidth=3, state="disabled")
+        self.dataConsole = ttk.Text(self.printConsole, borderwidth=3, state="normal")
         self.dataConsole.config(undo=True,wrap="word")
         self.dataConsole.grid(row=0,column=0,sticky=(S,W,E),padx=2,pady=2)
 
@@ -115,12 +115,14 @@ class measureGUI(ttk.Tk):
 
     def printToConsole(self,text,dataConsole):
         if dataConsole:
-            self.dataConsole.configure(state="normal")
+            #self.dataConsole.configure(state="normal")
             self.dataConsole.insert(END, text)
-            self.dataConsole.configure(state="disabled")
+            self.dataConsole.see("end")
+           # self.dataConsole.configure(state="disabled")
         else:
             self.notificationsConsole.configure(state="normal")
             self.notificationsConsole.insert(END, text)
+            self.dataConsole.see("end")
             self.notificationsConsole.configure(state="disabled") 
 
 #@line_profiler

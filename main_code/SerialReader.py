@@ -63,13 +63,16 @@ class SerialRead(threading.Thread):
         #sizeOfArr = 1
         shouldCalcDiff = False
         diff = 0
+        strToPrint = ""
+        counter1 = 0
         #time.sleep(0.1)
         while True:
             #time.sleep(0.01)
             shouldRead = self.mainPageRefference.shouldSerialReadFunc()
             if not shouldRead == prev: #če pride do spremembe state-a (pauza, zdaj) serial branja pol pobriše srial input ap zračuna difference cajta k se spet zalaufa read
-                self.ser.flushInput()
-                self.ser.read()
+                if self.ser: 
+                    self.ser.flushInput()
+                    self.ser.read()
                 prev = shouldRead
                 shouldCalcDiff = True
                 passOne = True
@@ -82,20 +85,31 @@ class SerialRead(threading.Thread):
                     inputChar = self.ser.read().decode("utf-8")
                 except serial.serialutil.SerialException:
                     self.parent.printToConsole("Lost serial connection",False)
+                    break
                     #print("Lost serial connection")
                 except:
                     self.parent.printToConsole("Something unexpected happened to serial connection.",False)
+                    break
                     #print("something strange happened to serial connection")
                 if inputChar != "\n":
                     self.line += inputChar
                 else:
                     #print(repr(self.line))
+                    
                     self.lineArray = self.line.strip().split("\t")
-                    #self.parent.printToConsole(self.lineArray,True)
+                    
+                    strToPrint += str(self.lineArray)
+                    strToPrint += "\n"
+                    if counter1 > 10:
+                        self.parent.printToConsole(strToPrint,True)
+                        strToPrint = ""
+                        counter1 = 0
+                    counter1 += 1
                     #print(self.lineArray)
                     try:
                         timeArd = float(self.lineArray[0])
                     except:
+                        
                         self.parent.printToConsole("Problem with conversion to float",False)
                         #print("problem with conversion to float")
                     self.line = ""
