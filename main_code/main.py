@@ -36,6 +36,8 @@ class measureGUI(ttk.Tk):
         ttk.Tk.__init__(self,*args,**kwargs)
         ttk.Tk.wm_title(self,"measureGUI")
 
+        #self.ser = None
+
 #container frame setup
         self.container = ttk.Frame(self)
         self.container.grid(row=0,column=0,sticky = (N,S,E,W))
@@ -103,15 +105,18 @@ class measureGUI(ttk.Tk):
 
     def initMainPage(self):
         #("init main page")
-        mainPageObj = MP.mainPage(self.container, self, self.data) #container je parent frejma, self je controller, data je refference na graph Lines
+        #self.serialReader = None
+        self.serialReader = SerialReader.SerialRead(self.data,self)
+        self.serialReader.daemon = True
+
+        mainPageObj = MP.mainPage(self.container, self, self.data,self.serialReader) #container je parent frejma, self je controller, data je refference na graph Lines
         self.frames[MP.mainPage] = mainPageObj
         mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
         mainPageObj.rowconfigure(0,weight=1)
         mainPageObj.columnconfigure(0,weight=1)
           
-        serialReader = SerialReader.SerialRead(self.data, mainPageObj,self)
-        serialReader.daemon = True
-        serialReader.start()
+        self.serialReader.mainPageRefference = mainPageObj
+        self.serialReader.start()
 
     def printToConsole(self,text,dataConsole):
         if dataConsole:
@@ -122,7 +127,7 @@ class measureGUI(ttk.Tk):
         else:
             self.notificationsConsole.configure(state="normal")
             self.notificationsConsole.insert(END, text)
-            self.dataConsole.see("end")
+            self.notificationsConsole.see("end")
             self.notificationsConsole.configure(state="disabled") 
 
 #@line_profiler

@@ -8,13 +8,15 @@ import tkinter as ttk
 from tkinter.ttk import Combobox
 
 class SerialRead(threading.Thread):
-    def __init__(self,dataClass, mainPage, parent):
+    def __init__(self,dataClass, parent):
 
         ports = list(serial.tools.list_ports.comports(include_links=False))
         ports_array = []
 
         self.port = ""
+        
         self.ser = None
+
         self.parent = parent
         for p in ports:
             ports_array.append(str(p).split(" ")[0])
@@ -36,19 +38,23 @@ class SerialRead(threading.Thread):
         elif len(ports) == 1:
             self.port = ports_array[0]
             self.ser = serial.Serial(self.port,9600)
-            parent.printToConsole("Serial connection opened" if self.ser.isOpen() else "Serial connection not opened",False)
+            parent.printToConsole("Serial connection opened \n" if self.ser.isOpen() else "Serial connection not opened \n",False)
             #print(self.ser.isOpen())
 
 
 
         self.lineArray = []
 
-        self.mainPageRefference = mainPage
+        self.mainPageRefference = None
         threading.Thread.__init__(self)
 
         self._dataClass = dataClass
     
         self.line = ""
+
+    def closeSerialConnection(self):
+        self.ser.close()
+        print(self.ser)
 
     def setComPort(self, combobox,top):
         print(combobox.get())
@@ -84,18 +90,14 @@ class SerialRead(threading.Thread):
                 try:                        
                     inputChar = self.ser.read().decode("utf-8")
                 except serial.serialutil.SerialException:
-                    self.parent.printToConsole("Lost serial connection",False)
+                    self.parent.printToConsole("Lost serial connection\n",False)
                     break
-                    #print("Lost serial connection")
                 except:
-                    self.parent.printToConsole("Something unexpected happened to serial connection.",False)
+                    self.parent.printToConsole("Something unexpected happened to serial connection.\n",False)
                     break
-                    #print("something strange happened to serial connection")
                 if inputChar != "\n":
                     self.line += inputChar
                 else:
-                    #print(repr(self.line))
-                    
                     self.lineArray = self.line.strip().split("\t")
                     
                     strToPrint += str(self.lineArray)
@@ -110,7 +112,7 @@ class SerialRead(threading.Thread):
                         timeArd = float(self.lineArray[0])
                     except:
                         
-                        self.parent.printToConsole("Problem with conversion to float",False)
+                        self.parent.printToConsole("Problem with conversion to float\n",False)
                         #print("problem with conversion to float")
                     self.line = ""
 

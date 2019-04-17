@@ -25,12 +25,16 @@ class mainPage(ttk.Frame):
         return self.shouldSerialRead
 
 
-    def __init__(self, parent, controller, dataClass):
+    def __init__(self, parent, controller, dataClass,serialReader):
         ttk.Frame.__init__(self,parent)
+
+        self.windowSize = 100
 
         self.shouldSerialRead= False
         self._dataClass = dataClass
-
+        self.serialReaderRef = serialReader
+        self.controller = controller
+        #self.ser = serReff
         #self._serialReaderRefference = serialReader
         
         toolbarContainer = ttk.Frame(self)
@@ -38,9 +42,14 @@ class mainPage(ttk.Frame):
 
         #row=3,column=0,sticky=(N,S,W,E)
 
+        
         fig = plt.Figure()
+        #ax = fig.add_axes([0.03,0.05,0.96,0.96])
+        fig.subplots_adjust(left=0.05,right=0.96,bottom=0.05,top=0.96)
+
         ax1 = fig.add_subplot(111)
         self.line1, = ax1.plot(0, 0)
+        ax1.margins(0.5,tight=True)
 
         ax2 = ax1.twinx()
         self.line2, = ax2.plot(0,0)
@@ -65,13 +74,40 @@ class mainPage(ttk.Frame):
        # testLabel = ttk.Label(commandsFrame,text="test label on main page")
        # testLabel.grid(column=0,row=0)
 
-        testButton = ttk.Button(commandsFrame, text="test button on main page",command=lambda:controller.showFrame(SP.setupPage))
-        testButton.grid(column=1,row=1) 
+        testButton = ttk.Button(commandsFrame, text="test button on main page",command=lambda:self.goBackToSetupPage(controller))
+        testButton.grid(column=1,row=1,pady=10) 
 
         startSerialButton = ttk.Button(commandsFrame,text="start/stop serial", command=lambda:self.changeShouldReadState())
         startSerialButton.grid(column=1,row=2)
         
+        windowSizeEntry = ttk.Entry(commandsFrame)
+        windowSizeEntry.insert(0, 50) #default value je 50
+        windowSizeEntry.grid(column=1,row=3,pady=(30,5))
+
+        setWindowSizeButton = ttk.Button(commandsFrame,text="Set window size",command=lambda:self.setWindowSize(windowSizeEntry))
+        setWindowSizeButton.grid(column=1,row=4)
+
+
+    def setWindowSize(self,windowSizeEntry):
+        winSize = windowSizeEntry.get()
+        if winSize.isdigit():
+            self.windowSize = int(winSize)
+            self.controller.printToConsole("Setting window size to "+str(self.windowSize)+"\n",False)
+        else:
+            self.controller.printToConsole("Window size must be a positive integer, not"+str(winSize)+"\n",False)
+
         
+
+    def goBackToSetupPage(self,controller):
+        controller.showFrame(SP.setupPage)
+        #print("going to setup page")
+        self.serialReaderRef.closeSerialConnection()
+        #print(self.ser)
+        #if self.ser:
+        #    self.ser.close()
+        #    print("closing serial")
+        #    print(self.ser)
+
 
 
     def run(self,i):  #funkcija je klicana vsakih n miliskeund 
@@ -82,9 +118,22 @@ class mainPage(ttk.Frame):
             #print(self._dataClass[0]._color)
             #print(self._dataClass[0].XData)
 
+        #print(self.windowSize)
+        windowSize = self.windowSize
         
-        self.line1.axes.relim()
-        self.line1.axes.autoscale_view()
+        lenOfXData = len(self._dataClass[1].XData)
+        if lenOfXData > windowSize:
+            if self.shouldSerialRead:
+                #xmin, xmax = self.line1.axes.get_xlim()
+                self.line1.axes.set_xlim((lenOfXData-windowSize+1)/40,lenOfXData/40)
+                self.line1.axes.relim()
+                #self.line1.axes.autoscale_view()
+                #self.line1.axes.autoscale(axis={"y"})
+
+        else:
+        #self.line1.axes.set_xlim(10,100)
+            self.line1.axes.relim()
+            self.line1.axes.autoscale_view()
         self.line2.axes.relim()
         self.line2.axes.autoscale_view()
         
