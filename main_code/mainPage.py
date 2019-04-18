@@ -28,7 +28,7 @@ class mainPage(ttk.Frame):
     def __init__(self, parent, controller, dataClass,serialReader):
         ttk.Frame.__init__(self,parent)
 
-        self.windowSize = 100
+        self.windowSize = 10
 
         self.shouldSerialRead= False
         self._dataClass = dataClass
@@ -49,7 +49,7 @@ class mainPage(ttk.Frame):
 
         ax1 = fig.add_subplot(111)
         self.line1, = ax1.plot(0, 0)
-        ax1.margins(0.5,tight=True)
+        #   ax1.margins(0.5,tight=True)
 
         ax2 = ax1.twinx()
         self.line2, = ax2.plot(0,0)
@@ -81,7 +81,7 @@ class mainPage(ttk.Frame):
         startSerialButton.grid(column=1,row=2)
         
         windowSizeEntry = ttk.Entry(commandsFrame)
-        windowSizeEntry.insert(0, 50) #default value je 50
+        windowSizeEntry.insert(0, 30) #default value je 50
         windowSizeEntry.grid(column=1,row=3,pady=(30,5))
 
         setWindowSizeButton = ttk.Button(commandsFrame,text="Set window size",command=lambda:self.setWindowSize(windowSizeEntry))
@@ -91,8 +91,11 @@ class mainPage(ttk.Frame):
     def setWindowSize(self,windowSizeEntry):
         winSize = windowSizeEntry.get()
         if winSize.isdigit():
-            self.windowSize = int(winSize)
-            self.controller.printToConsole("Setting window size to "+str(self.windowSize)+"\n",False)
+            if self._dataClass[0].XData[-1] < int(winSize):
+                self.controller.printToConsole("Window cannot be larger than the current amount of data\n", False)
+            else:
+                self.windowSize = int(winSize)
+                self.controller.printToConsole("Setting window size to "+str(self.windowSize)+"\n",False)
         else:
             self.controller.printToConsole("Window size must be a positive integer, not"+str(winSize)+"\n",False)
 
@@ -100,40 +103,38 @@ class mainPage(ttk.Frame):
 
     def goBackToSetupPage(self,controller):
         controller.showFrame(SP.setupPage)
-        #print("going to setup page")
         self.serialReaderRef.closeSerialConnection()
-        #print(self.ser)
-        #if self.ser:
-        #    self.ser.close()
-        #    print("closing serial")
-        #    print(self.ser)
 
 
 
     def run(self,i):  #funkcija je klicana vsakih n miliskeund 
         if self._dataClass:
-            self.line1.set_data(self._dataClass[1].XData, self._dataClass[1].YData)
+            if len(self._dataClass[1].XData) == len(self._dataClass[1].YData):
+                self.line1.set_data(self._dataClass[1].XData, self._dataClass[1].YData)
             #self.line1.set_data(self._dataClass[2].XData, self._dataClass[2].YData)
-            self.line2.set_data(self._dataClass[5].XData, self._dataClass[5].YData)
+            if len(self._dataClass[5].XData) == len(self._dataClass[5].YData):
+                self.line2.set_data(self._dataClass[5].XData, self._dataClass[5].YData)
             #print(self._dataClass[0]._color)
             #print(self._dataClass[0].XData)
 
-        #print(self.windowSize)
-        windowSize = self.windowSize
-        
-        lenOfXData = len(self._dataClass[1].XData)
-        if lenOfXData > windowSize:
-            if self.shouldSerialRead:
-                #xmin, xmax = self.line1.axes.get_xlim()
-                self.line1.axes.set_xlim((lenOfXData-windowSize+1)/40,lenOfXData/40)
-                self.line1.axes.relim()
-                #self.line1.axes.autoscale_view()
-                #self.line1.axes.autoscale(axis={"y"})
+            #print(self.windowSize)
+            windowSize = self.windowSize
+            
+            #lenOfXData = len(self._dataClass[1].XData)
+            #if lenOfXData > windowSize:
+            if self._dataClass[1].XData[-1] > windowSize:
+                if self.shouldSerialRead:
+                    #xmin, xmax = self.line1.axes.get_xlim()
+                    self.line1.axes.set_xlim(self._dataClass[1].XData[-1]-windowSize,self._dataClass[1].XData[-1]+self.windowSize/50)
+                    #self.line1.axes.set_xlim((lenOfXData-windowSize)/40,lenOfXData/40)
+                    #self.line1.axes.relim()
+                    #self.line1.axes.autoscale_view()
+                    #self.line1.axes.autoscale(axis={"y"})
 
-        else:
-        #self.line1.axes.set_xlim(10,100)
-            self.line1.axes.relim()
-            self.line1.axes.autoscale_view()
-        self.line2.axes.relim()
-        self.line2.axes.autoscale_view()
+            else:
+            #self.line1.axes.set_xlim(10,100)
+                self.line1.axes.relim()
+                self.line1.axes.autoscale_view()
+            self.line2.axes.relim()
+            self.line2.axes.autoscale_view()
         

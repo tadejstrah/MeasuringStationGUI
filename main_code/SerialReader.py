@@ -111,7 +111,6 @@ class SerialRead(threading.Thread):
                     try:
                         timeArd = float(self.lineArray[0])
                     except:
-                        
                         self.parent.printToConsole("Problem with conversion to float\n",False)
                         #print("problem with conversion to float")
                     self.line = ""
@@ -128,12 +127,13 @@ class SerialRead(threading.Thread):
       
                         elif len(self.lineArray) >5:
                             for x in range(1,len(self.lineArray)+1):
-                                self._dataClass[x-1].XData.append(timeArd-diff)
-                                self._dataClass[x-1].YData.append(self.lineArray[x-1])
+                                if self._dataClass[x-1]:
+                                    self._dataClass[x-1].XData.append(timeArd-diff)
+                                    self._dataClass[x-1].YData.append(self.lineArray[x-1])
                             #self._dataClass[0].XData.append(timeArd - diff)
                             #self._dataClass[0].YData.append(self.lineArray[5])
             else:
-                time.sleep(0.1)
+                time.sleep(0.5)
                 pass
                 #if self.ser:
                 #    if self.ser.isOpen():
