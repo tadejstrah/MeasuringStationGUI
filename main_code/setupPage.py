@@ -58,7 +58,7 @@ class setupPage(ttk.Frame):
 
     def goToMainPageButtonAction(self,controller):
         for i in range(len(self.labels)):
-            graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get())
+            graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),"Label " + str(i+1))
             self._dataArrRefference.append(graphLine)
 
         if not MP.mainPage in controller.frames.keys():
@@ -82,7 +82,7 @@ class setupPage(ttk.Frame):
         for child in self.graphLinesSelector_frame.winfo_children():
             child.destroy()
         for i in range(self.numberOfParams):
-            self.labels[i] = Label(self.graphLinesSelector_frame,text=("Label" + str(i+1)))
+            self.labels[i] = Label(self.graphLinesSelector_frame,text=("Label " + str(i+1)))
             self.labels[i].grid(row=i,column=0)
 
             self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["mA","°"],state="readonly")

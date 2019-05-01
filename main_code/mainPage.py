@@ -14,6 +14,11 @@ import threading
 import time
 from queue import Queue
 
+print(matplotlib.pyplot.get_backend())
+matplotlib.use("ps")
+import matplotlib.pyplot as plt
+print(matplotlib.pyplot.get_backend())
+
 class mainPage(ttk.Frame):
 
     def changeShouldReadState(self):
@@ -42,18 +47,37 @@ class mainPage(ttk.Frame):
 
         #row=3,column=0,sticky=(N,S,W,E)
 
-        
+        self.checkboxes = []
+
+
+
         fig = plt.Figure()
         #ax = fig.add_axes([0.03,0.05,0.96,0.96])
         fig.subplots_adjust(left=0.05,right=0.96,bottom=0.05,top=0.96)
 
+
         ax1 = fig.add_subplot(111)
-        self.line1, = ax1.plot(0, 0)
+        ax2 = ax1.twinx()
+
+        self.graphLines = []
+        for x in self._dataClass:
+            self.graphLines.append("")
+
+        for x in range(len(self._dataClass)):
+            if self._dataClass[x]._axis == "mA":
+                self.graphLines[x], = ax1.plot(0,0)
+            else:
+                self.graphLines[x], = ax2.plot(0,0)
+            self.graphLines[x].set_color(self._dataClass[x]._color)
+
+
+       # ax1 = fig.add_subplot(111)
+        #self.line1, = ax1.plot(0, 0)
         #   ax1.margins(0.5,tight=True)
 
-        ax2 = ax1.twinx()
-        self.line2, = ax2.plot(0,0)
-        self.line2.set_color("red")
+        #ax2 = ax1.twinx()
+        #self.line2, = ax2.plot(0,0)
+        #self.line2.set_color("red")
         
         #self.nLine, = ax1.plot(0,0)
 
@@ -66,13 +90,10 @@ class mainPage(ttk.Frame):
         toolbar.update()
 
         
-        self.ani = FuncAnimation(fig, self. run, interval=70,repeat=True)
+        self.ani = FuncAnimation(fig, self. run, interval=100,repeat=True)
 
         commandsFrame = ttk.Frame(self)
         commandsFrame.grid(column=1,row=0,sticky=(E,W,N))
-
-       # testLabel = ttk.Label(commandsFrame,text="test label on main page")
-       # testLabel.grid(column=0,row=0)
 
         testButton = ttk.Button(commandsFrame, text="test button on main page",command=lambda:self.goBackToSetupPage(controller))
         testButton.grid(column=1,row=1,pady=10) 
@@ -81,12 +102,30 @@ class mainPage(ttk.Frame):
         startSerialButton.grid(column=1,row=2)
         
         windowSizeEntry = ttk.Entry(commandsFrame)
-        windowSizeEntry.insert(0, 30) #default value je 50
+        windowSizeEntry.insert(0, 30) #default value 
         windowSizeEntry.grid(column=1,row=3,pady=(30,5))
 
         setWindowSizeButton = ttk.Button(commandsFrame,text="Set window size",command=lambda:self.setWindowSize(windowSizeEntry))
-        setWindowSizeButton.grid(column=1,row=4)
+        setWindowSizeButton.grid(column=1,row=4, pady=(5,20))
 
+        for x in range(len(dataClass)):
+
+            lineFrame = ttk.Frame(commandsFrame)
+            lineFrame.grid(column=1, row=x+6)
+
+            emptyLabel = ttk.Label(lineFrame,text="   ", background=dataClass[x]._color)
+            emptyLabel.grid(row=0,column=0)
+
+            var = ttk.BooleanVar(value=True)
+            self.checkboxes.append(var)
+            lineCheckbox = ttk.Checkbutton(lineFrame, text =dataClass[x]._name, var=var, command=self.callBackFunc)
+            lineCheckbox.grid(row=0,column=1)
+
+    def callBackFunc(self):
+        for x in range(len(self.checkboxes)):
+            self.graphLines[x].set_visible(self.checkboxes[x].get())
+           # (self.checkboxes[x].get())
+        #print("callback func")
 
     def setWindowSize(self,windowSizeEntry):
         winSize = windowSizeEntry.get()
@@ -108,33 +147,29 @@ class mainPage(ttk.Frame):
 
 
     def run(self,i):  #funkcija je klicana vsakih n miliskeund 
-        if self._dataClass:
-            if len(self._dataClass[1].XData) == len(self._dataClass[1].YData):
-                self.line1.set_data(self._dataClass[1].XData, self._dataClass[1].YData)
-            #self.line1.set_data(self._dataClass[2].XData, self._dataClass[2].YData)
-            if len(self._dataClass[5].XData) == len(self._dataClass[5].YData):
-                self.line2.set_data(self._dataClass[5].XData, self._dataClass[5].YData)
-            #print(self._dataClass[0]._color)
-            #print(self._dataClass[0].XData)
+        try:
+            if self._dataClass:
+                #print(self._dataClass[1].XData)
+                for x in range(1,len(self._dataClass)):
 
-            #print(self.windowSize)
-            windowSize = self.windowSize
+                    self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
+                    #self.graphLines[1].set_data(self._dataClass[5].XData, self._dataClass[5].YData)
+
+                windowSize = self.windowSize
+                if self._dataClass[0].XData[-1] > windowSize:
+                    if self.shouldSerialRead:
+                        self.graphLines[1].axes.set_xlim(self._dataClass[0].XData[-1]-windowSize,self._dataClass[0].XData[-1]+self.windowSize/50)
+
+                else:
+                    self.graphLines[1].axes.relim()
+                    self.graphLines[1].axes.autoscale_view()
+                
+                if len(self._dataClass) > 1:
+                    for x in range(0,len(self.graphLines)-1):
+                        self.graphLines[x+1].axes.relim()
+                        self.graphLines[x+1].axes.autoscale_view()
+                #self.line2.axes.relim()
+                #self.line2.axes.autoscale_view()
             
-            #lenOfXData = len(self._dataClass[1].XData)
-            #if lenOfXData > windowSize:
-            if self._dataClass[1].XData[-1] > windowSize:
-                if self.shouldSerialRead:
-                    #xmin, xmax = self.line1.axes.get_xlim()
-                    self.line1.axes.set_xlim(self._dataClass[1].XData[-1]-windowSize,self._dataClass[1].XData[-1]+self.windowSize/50)
-                    #self.line1.axes.set_xlim((lenOfXData-windowSize)/40,lenOfXData/40)
-                    #self.line1.axes.relim()
-                    #self.line1.axes.autoscale_view()
-                    #self.line1.axes.autoscale(axis={"y"})
-
-            else:
-            #self.line1.axes.set_xlim(10,100)
-                self.line1.axes.relim()
-                self.line1.axes.autoscale_view()
-            self.line2.axes.relim()
-            self.line2.axes.autoscale_view()
-        
+        except: 
+            print("animation func exception")

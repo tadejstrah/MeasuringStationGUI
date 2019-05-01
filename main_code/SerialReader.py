@@ -21,7 +21,7 @@ class SerialRead(threading.Thread):
         for p in ports:
             ports_array.append(str(p).split(" ")[0])
         if len(ports) == 0:
-            parent.printToConsole("No com ports were found",False)
+            parent.printToConsole("No com ports were found\n",False)
             #print("no com ports were found")
             #top = ttk.Toplevel()
         elif len(ports) > 1:  #če je več com portov se odpre dialog za izbiro
@@ -65,79 +65,82 @@ class SerialRead(threading.Thread):
 
 
     def run(self):
-        prev = False
-        #sizeOfArr = 1
-        shouldCalcDiff = False
-        diff = 0
-        strToPrint = ""
-        counter1 = 0
-        #time.sleep(0.1)
-        while True:
-            #time.sleep(0.01)
-            shouldRead = self.mainPageRefference.shouldSerialReadFunc()
-            if not shouldRead == prev: #če pride do spremembe state-a (pauza, zdaj) serial branja pol pobriše srial input ap zračuna difference cajta k se spet zalaufa read
-                if self.ser: 
-                    self.ser.flushInput()
-                    self.ser.read()
-                prev = shouldRead
-                shouldCalcDiff = True
-                passOne = True
+        try:
+            prev = False
+            #sizeOfArr = 1
+            shouldCalcDiff = False
+            diff = 0
+            strToPrint = ""
+            counter1 = 0
+            #time.sleep(0.1)
+            while True:
+                #time.sleep(0.01)
+                shouldRead = self.mainPageRefference.shouldSerialReadFunc()
+                if not shouldRead == prev: #če pride do spremembe state-a (pauza, zdaj) serial branja pol pobriše srial input ap zračuna difference cajta k se spet zalaufa read
+                    if self.ser: 
+                        self.ser.flushInput()
+                        self.ser.read()
+                    prev = shouldRead
+                    shouldCalcDiff = True
+                    passOne = True
 
-            if shouldRead:
-                timeArd = 0
-                if not self.ser: break
-                if not self.ser.isOpen() : break
-                try:                        
-                    inputChar = self.ser.read().decode("utf-8")
-                except serial.serialutil.SerialException:
-                    self.parent.printToConsole("Lost serial connection\n",False)
-                    break
-                except:
-                    self.parent.printToConsole("Something unexpected happened to serial connection.\n",False)
-                    break
-                if inputChar != "\n":
-                    self.line += inputChar
-                else:
-                    self.lineArray = self.line.strip().split("\t")
-                    
-                    strToPrint += str(self.lineArray)
-                    strToPrint += "\n"
-                    if counter1 > 10:
-                        self.parent.printToConsole(strToPrint,True)
-                        strToPrint = ""
-                        counter1 = 0
-                    counter1 += 1
-                    #print(self.lineArray)
-                    try:
-                        timeArd = float(self.lineArray[0])
+                if shouldRead:
+                    timeArd = 0
+                    if not self.ser: break
+                    if not self.ser.isOpen() : break
+                    try:                        
+                        inputChar = self.ser.read().decode("utf-8")
+                    except serial.serialutil.SerialException:
+                        self.parent.printToConsole("Lost serial connection\n",False)
+                        break
                     except:
-                        self.parent.printToConsole("Problem with conversion to float\n",False)
-                        #print("problem with conversion to float")
-                    self.line = ""
+                        self.parent.printToConsole("Something unexpected happened to serial connection.\n",False)
+                        break
+                    if inputChar != "\n":
+                        self.line += inputChar
+                    else:
+                        self.lineArray = self.line.strip().split("\t")
+                        
+                        strToPrint += str(self.lineArray)
+                        strToPrint += "\n"
+                        if counter1 > 10:
+                            self.parent.printToConsole(strToPrint,True)
+                            strToPrint = ""
+                            counter1 = 0
+                        counter1 += 1
+                        #print(self.lineArray)
+                        try:
+                            timeArd = float(self.lineArray[0])
+                        except:
+                            self.parent.printToConsole("Problem with conversion to float\n",False)
+                            #print("problem with conversion to float")
+                        self.line = ""
 
-                    if self._dataClass:
-                        if shouldCalcDiff:
-                            if passOne:
-                                passOne = False
-                                pass
-                            else:
-                                diff = timeArd - self._dataClass[0].XData[-1]
-                                shouldCalcDiff = False
-                                passOne = False
-      
-                        elif len(self.lineArray) >5:
-                            for x in range(1,len(self.lineArray)+1):
-                                if self._dataClass[x-1]:
-                                    self._dataClass[x-1].XData.append(timeArd-diff)
-                                    self._dataClass[x-1].YData.append(self.lineArray[x-1])
-                            #self._dataClass[0].XData.append(timeArd - diff)
-                            #self._dataClass[0].YData.append(self.lineArray[5])
-            else:
-                time.sleep(0.5)
-                pass
-                #if self.ser:
-                #    if self.ser.isOpen():
-                  #      self.ser.flushInput()
-                        #self.ser.read()
-                
-    
+                        if self._dataClass:
+                            if shouldCalcDiff:
+                                if passOne:
+                                    passOne = False
+                                    pass
+                                else:
+                                    diff = timeArd - self._dataClass[0].XData[-1]
+                                    shouldCalcDiff = False
+                                    passOne = False
+        
+                            elif True:#len(self.lineArray) >5:
+                                #print(self.lineArray[0])
+                                for x in range(1,len(self.lineArray)+1):
+                                    if self._dataClass[x-1]:
+                                        self._dataClass[x-1].XData.append(timeArd-diff)
+                                        self._dataClass[x-1].YData.append(self.lineArray[x-1])
+                                #self._dataClass[0].XData.append(timeArd - diff)
+                                #self._dataClass[0].YData.append(self.lineArray[5])
+                else:
+                    time.sleep(0.01)
+                    pass
+                    #if self.ser:
+                    #    if self.ser.isOpen():
+                    #      self.ser.flushInput()
+                            #self.ser.read()
+        except:
+            print("exception on serial reader therad run")            
+        

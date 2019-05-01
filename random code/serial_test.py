@@ -39,7 +39,7 @@ while 1:
     if (inputChar != "\n"):
         line += inputChar
     else:
-        #print(line)
+        print(line)
         time = float(line[0:6])
         #print("Time = "+str(time))
         line = ""

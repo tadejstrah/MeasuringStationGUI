@@ -3,33 +3,12 @@ import tkinter
 import tkinter as ttk
 from tkinter import N,S,E,W,END,INSERT
 
-
 import setupPage as SP
 import mainPage as MP 
 import SerialReader
 import time
 import GraphLine
 
-
-'''
-def line_profiler(view=None, extra_view=None):
-    import line_profiler
-
-def wrapper(view):
-    def wrapped(*args, **kwargs):
-        prof = line_profiler.LineProfiler()
-        prof.add_function(view)
-        if extra_view:
-            [prof.add_function(v) for v in extra_view]
-        with prof:
-            resp = view(*args, **kwargs)
-        prof.print_stats()
-        return resp
-    return wrapped
-    if view:
-        return wrapper(view)
-    return wrapper
-'''
 
 class measureGUI(ttk.Tk):
     def __init__(self,*args,**kwargs):
@@ -60,16 +39,7 @@ class measureGUI(ttk.Tk):
         self.notificationsConsole = ttk.Text(self.printConsole,borderwidth=3,state="disabled")
         self.notificationsConsole.config(undo=True,wrap="word")
         self.notificationsConsole.grid(row=0,column=2,sticky=(S,W,E), padx=2,pady=2)
-        
-        '''
-        text = ttk.Text(self.printConsole,borderwidth=3,state="disabled")
-        text.config(undo=True,wrap="word")
-        text.grid(row=0,column=0,sticky=(S,W,E),padx=2,pady=2)
-        text.configure(state="normal")
-        text.insert(END,"Hello World\n")
-        text.insert(END,"This is print console \nImportant information will be displayed here in the future")
-        text.configure(state="disabled")
-        '''
+
         scrollbar1 = ttk.Scrollbar(self.printConsole,command=self.dataConsole.yview)
         scrollbar1.grid(row=0,column=1,sticky=(N,S,W,E))
         self.dataConsole["yscrollcommand"] = scrollbar1.set
