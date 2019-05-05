@@ -15,6 +15,8 @@ class setupPage(ttk.Frame):
     def __init__(self,parent,controller,dataArrRefference):
         ttk.Frame.__init__(self,parent)
 
+        self.defaultNrOfLines = 5
+
         self.labels=[]
         containerFrame = Frame(self)
         containerFrame.grid(column=0,row=0,sticky=(N,S,W,E))
@@ -27,6 +29,7 @@ class setupPage(ttk.Frame):
 
         self.colorComboBoxes = []
         self.axisComboBoxes = []
+        self.nameInputs = []
 
         dropDown_frame = Frame(containerFrame)
         dropDown_frame.grid(column=0,row=0,sticky=(N,S,W,E))
@@ -42,25 +45,19 @@ class setupPage(ttk.Frame):
         options = [1,2,3,4,5,6,7,8,9]
 
         dropDownMenu = Combobox(dropDown_frame,values=options,state="readonly")
-        dropDownMenu.set(6)
+        dropDownMenu.set(self.defaultNrOfLines)
         dropDownMenu.bind('<<ComboboxSelected>>', self.on_dropDownMenu_select)
         dropDownMenu.grid()
 
 
-        label = ttk.Label(continueButton_frame,text="test label on setup page",background="red")
-        label.grid()
-        #label.grid(column=0,row=0,sticky=(S,E,W,N))
-        label2 = ttk.Label(continueButton_frame,text="lbael 2",background="blue")
-        label2.grid()
-
-        testButton = ttk.Button(continueButton_frame, text="gotomainpage",command=lambda:self.goToMainPageButtonAction(controller))
-        testButton.grid()
+        testButton = ttk.Button(continueButton_frame, text="Setup complete, continue to the main page.",command=lambda:self.goToMainPageButtonAction(controller))
+        testButton.grid(padx=10,pady=10)
 
     def goToMainPageButtonAction(self,controller):
         for i in range(len(self.labels)):
-            graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),"Label " + str(i+1))
+            graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
             self._dataArrRefference.append(graphLine)
-
+       # print(self._dataArrRefference[0])
         if not MP.mainPage in controller.frames.keys():
             controller.initMainPage()
         controller.showFrame(MP.mainPage)
@@ -73,26 +70,35 @@ class setupPage(ttk.Frame):
         if event:
             self.numberOfParams = int(event.widget.get())
         else:
-            self.numberOfParams = 6
+            self.numberOfParams = self.defaultNrOfLines
         for i in range(self.numberOfParams):
             self.labels.append(Label())
             self.colorComboBoxes.append(Combobox())
             self.axisComboBoxes.append(Combobox())
+            self.nameInputs.append(ttk.Entry())
 
         for child in self.graphLinesSelector_frame.winfo_children():
             child.destroy()
         for i in range(self.numberOfParams):
-            self.labels[i] = Label(self.graphLinesSelector_frame,text=("Label " + str(i+1)))
-            self.labels[i].grid(row=i,column=0)
+            self.labels[i] = Label(self.graphLinesSelector_frame,text=(str(i+1)))
+            self.labels[i].grid(row=i,column=0,pady=3,padx=10)
+
+            self.nameInputs[i] = ttk.Entry(self.graphLinesSelector_frame)
+            self.nameInputs[i].insert(0,"Label  " +str(i+1))
+            self.nameInputs[i].grid(row=i,column=1)
 
             self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["mA","°"],state="readonly")
-            self.axisComboBoxes[i].set("mA")
-            self.axisComboBoxes[i].grid(row=i,column=1)
+            if i == 4:
+                self.axisComboBoxes[i].set("°")
+            else:
+                self.axisComboBoxes[i].set("mA")
+            self.axisComboBoxes[i].grid(row=i,column=2,padx=3)
 
-            self.colorComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["red","blue","gold","green","black","purple"],state="readonly")
-            self.colorComboBoxes[i].set("black")
+            self.colorValues = ["red","blue","gold","green","black","purple"]
+            self.colorComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=self.colorValues,state="readonly")
+            self.colorComboBoxes[i].set(self.colorValues[i])
             self.colorComboBoxes[i].bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
-            self.colorComboBoxes[i].grid(row=i,column=2)
+            self.colorComboBoxes[i].grid(row=i,column=3)
 
     def on_colorMenuDropdown_select(self,event):
         if event:

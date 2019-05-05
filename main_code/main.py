@@ -105,7 +105,7 @@ def main():
     app = measureGUI()
     app.rowconfigure(0,weight=1)
     app.columnconfigure(0,weight=1)
-    app.geometry("1000x500")
+    app.geometry("1500x750")
     app.mainloop()
 
 

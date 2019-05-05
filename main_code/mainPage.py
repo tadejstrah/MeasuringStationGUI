@@ -12,20 +12,13 @@ from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 import threading
 import time
-from queue import Queue
-
-print(matplotlib.pyplot.get_backend())
-matplotlib.use("ps")
-import matplotlib.pyplot as plt
-print(matplotlib.pyplot.get_backend())
 
 class mainPage(ttk.Frame):
 
     def changeShouldReadState(self):
         self.shouldSerialRead
         self.shouldSerialRead = not self.shouldSerialRead
-        #self._serialReaderRefference.lineArray = []
-
+        
     def shouldSerialReadFunc(self):   #serialReader počekira tole funkcijo da začne/neha delat
         return self.shouldSerialRead
 
@@ -39,20 +32,13 @@ class mainPage(ttk.Frame):
         self._dataClass = dataClass
         self.serialReaderRef = serialReader
         self.controller = controller
-        #self.ser = serReff
-        #self._serialReaderRefference = serialReader
-        
+
         toolbarContainer = ttk.Frame(self)
         toolbarContainer.grid(sticky=W, row=2, column=0)
 
-        #row=3,column=0,sticky=(N,S,W,E)
-
         self.checkboxes = []
 
-
-
         fig = plt.Figure()
-        #ax = fig.add_axes([0.03,0.05,0.96,0.96])
         fig.subplots_adjust(left=0.05,right=0.96,bottom=0.05,top=0.96)
 
 
@@ -95,18 +81,23 @@ class mainPage(ttk.Frame):
         commandsFrame = ttk.Frame(self)
         commandsFrame.grid(column=1,row=0,sticky=(E,W,N))
 
-        testButton = ttk.Button(commandsFrame, text="test button on main page",command=lambda:self.goBackToSetupPage(controller))
+        testButton = ttk.Button(commandsFrame, text="Back to setup page",command=lambda:self.goBackToSetupPage(controller))
         testButton.grid(column=1,row=1,pady=10) 
 
-        startSerialButton = ttk.Button(commandsFrame,text="start/stop serial", command=lambda:self.changeShouldReadState())
+        self.playPauseLogo = ttk.PhotoImage(file="img\playpause2.png")
+        self.playPauseLogo = self.playPauseLogo.subsample(2,2)
+        startSerialButton = ttk.Button(commandsFrame,image=self.playPauseLogo, command=lambda:self.changeShouldReadState())
         startSerialButton.grid(column=1,row=2)
         
+        windowSizeLabel = ttk.Label(commandsFrame, text="Plotting window size:")
+        windowSizeLabel.grid(column=1,row=3,pady=(30,0))
+
         windowSizeEntry = ttk.Entry(commandsFrame)
         windowSizeEntry.insert(0, 30) #default value 
-        windowSizeEntry.grid(column=1,row=3,pady=(30,5))
+        windowSizeEntry.grid(column=1,row=4,pady=(5,5))
 
         setWindowSizeButton = ttk.Button(commandsFrame,text="Set window size",command=lambda:self.setWindowSize(windowSizeEntry))
-        setWindowSizeButton.grid(column=1,row=4, pady=(5,20))
+        setWindowSizeButton.grid(column=1,row=5, pady=(5,20))
 
         for x in range(len(dataClass)):
 
@@ -150,10 +141,8 @@ class mainPage(ttk.Frame):
         try:
             if self._dataClass:
                 #print(self._dataClass[1].XData)
-                for x in range(1,len(self._dataClass)):
-
+                for x in range(len(self._dataClass)):
                     self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
-                    #self.graphLines[1].set_data(self._dataClass[5].XData, self._dataClass[5].YData)
 
                 windowSize = self.windowSize
                 if self._dataClass[0].XData[-1] > windowSize:

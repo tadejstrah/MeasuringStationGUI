@@ -127,11 +127,12 @@ class SerialRead(threading.Thread):
                                     passOne = False
         
                             elif True:#len(self.lineArray) >5:
-                                #print(self.lineArray[0])
-                                for x in range(1,len(self.lineArray)+1):
-                                    if self._dataClass[x-1]:
+                               # print(self.lineArray[0])
+                                for x in range(1,len(self.lineArray)):
+                                    #print(x-1)
+                                    if self._dataClass[x-1] and self.lineArray[x]:
                                         self._dataClass[x-1].XData.append(timeArd-diff)
-                                        self._dataClass[x-1].YData.append(self.lineArray[x-1])
+                                        self._dataClass[x-1].YData.append(self.lineArray[x])
                                 #self._dataClass[0].XData.append(timeArd - diff)
                                 #self._dataClass[0].YData.append(self.lineArray[5])
                 else:
@@ -141,6 +142,8 @@ class SerialRead(threading.Thread):
                     #    if self.ser.isOpen():
                     #      self.ser.flushInput()
                             #self.ser.read()
-        except:
+        
+        except Exception as e:
+            print(e)
             print("exception on serial reader therad run")            
         
