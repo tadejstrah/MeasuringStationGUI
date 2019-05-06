@@ -55,7 +55,7 @@ class setupPage(ttk.Frame):
 
     def goToMainPageButtonAction(self,controller):
         for i in range(len(self.labels)):
-            print(len(self.labels))
+            #print(len(self.labels))
             graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
             self._dataArrRefference.append(graphLine)
        # print(self._dataArrRefference[0])
@@ -67,7 +67,7 @@ class setupPage(ttk.Frame):
 
 
     def on_dropDownMenu_select(self,event=None):
-        print(event)
+        #print(event)
         self.labels = []
         if event:
             self.numberOfParams = int(event.widget.get())

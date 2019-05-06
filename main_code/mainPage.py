@@ -12,6 +12,7 @@ from matplotlib.figure import Figure
 from matplotlib.animation import FuncAnimation
 import threading
 import time
+from dataManager import dataManager
 
 class mainPage(ttk.Frame):
 
@@ -25,6 +26,8 @@ class mainPage(ttk.Frame):
 
     def __init__(self, parent, controller, dataClass,serialReader):
         ttk.Frame.__init__(self,parent)
+
+        self.dataManager = dataManager(dataClass)
 
         self.windowSize = 10
 
@@ -56,16 +59,6 @@ class mainPage(ttk.Frame):
                 self.graphLines[x], = ax2.plot(0,0)
             self.graphLines[x].set_color(self._dataClass[x]._color)
 
-
-       # ax1 = fig.add_subplot(111)
-        #self.line1, = ax1.plot(0, 0)
-        #   ax1.margins(0.5,tight=True)
-
-        #ax2 = ax1.twinx()
-        #self.line2, = ax2.plot(0,0)
-        #self.line2.set_color("red")
-        
-        #self.nLine, = ax1.plot(0,0)
 
         plotCanvas = FigureCanvasTkAgg(fig, self)
         plotCanvas.get_tk_widget().grid(column=0, row=0, sticky=(N,S,E,W))
@@ -112,6 +105,10 @@ class mainPage(ttk.Frame):
             lineCheckbox = ttk.Checkbutton(lineFrame, text =dataClass[x]._name, var=var, command=self.callBackFunc)
             lineCheckbox.grid(row=0,column=1)
 
+        saveDataButton = ttk.Button(commandsFrame, text="Save data to csv",command=self.dataManager.saveToFile)
+        saveDataButton.grid(column=1,row=15,pady=10)
+    
+
     def callBackFunc(self):
         for x in range(len(self.checkboxes)):
             self.graphLines[x].set_visible(self.checkboxes[x].get())
@@ -137,10 +134,9 @@ class mainPage(ttk.Frame):
 
 
 
-    def run(self,i):  #funkcija je klicana vsakih n miliskeund 
+    def run(self,i):  #funkcija je klicana vsakih n miliskeund in na grafu nastavi podakte za vse labelje in nastavi limite pogleda
         try:
             if self._dataClass:
-                #print(self._dataClass[1].XData)
                 for x in range(len(self._dataClass)):
                     self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
 
