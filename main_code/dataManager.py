@@ -21,3 +21,4 @@ class dataManager():
         outFile = filedialog.asksaveasfile(mode="w",defaultextension=".txt")
         outFile.write(out.getvalue())
         outFile.close()
+
