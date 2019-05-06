@@ -55,6 +55,7 @@ class setupPage(ttk.Frame):
 
     def goToMainPageButtonAction(self,controller):
         for i in range(len(self.labels)):
+            print(len(self.labels))
             graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
             self._dataArrRefference.append(graphLine)
        # print(self._dataArrRefference[0])
@@ -67,6 +68,7 @@ class setupPage(ttk.Frame):
 
     def on_dropDownMenu_select(self,event=None):
         print(event)
+        self.labels = []
         if event:
             self.numberOfParams = int(event.widget.get())
         else:
@@ -94,7 +96,7 @@ class setupPage(ttk.Frame):
                 self.axisComboBoxes[i].set("mA")
             self.axisComboBoxes[i].grid(row=i,column=2,padx=3)
 
-            self.colorValues = ["red","blue","gold","green","black","purple"]
+            self.colorValues = ["red","blue","gold","green","black","purple","pink","yellow","brown"]
             self.colorComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=self.colorValues,state="readonly")
             self.colorComboBoxes[i].set(self.colorValues[i])
             self.colorComboBoxes[i].bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
