@@ -3,11 +3,9 @@ import tkinter as ttk
 from tkinter import N,S,W,E
 import mainPage as MP
 from tkinter import IntVar
-#from tkinter import Combobox
 from tkinter.colorchooser import *
 import GraphLine
 
-#from tkinter import *
 from tkinter.ttk import *
 
 class setupPage(ttk.Frame):
@@ -17,7 +15,9 @@ class setupPage(ttk.Frame):
 
         self.defaultNrOfLines = 5
 
-        self.labels=[]
+        self.labels=[] #array of label widgets
+
+        #configuration of container frame - takes care of rescaling,...
         containerFrame = Frame(self)
         containerFrame.grid(column=0,row=0,sticky=(N,S,W,E))
         containerFrame.rowconfigure(0,weight=1)
@@ -25,49 +25,48 @@ class setupPage(ttk.Frame):
         containerFrame.rowconfigure(2,weight=1)
         containerFrame.columnconfigure(0,weight=1)
 
-        self._dataArrRefference = dataArrRefference
+        self._dataArrRefference = dataArrRefference #shared data object/array
 
-        self.colorComboBoxes = []
-        self.axisComboBoxes = []
-        self.nameInputs = []
+        self.colorComboBoxes = [] #array of color-selection comboboxes
+        self.axisComboBoxes = [] #array of axis-selection comboboxes
+        self.nameInputs = []   #array of text entries for name selection
 
-        dropDown_frame = Frame(containerFrame)
+        dropDown_frame = Frame(containerFrame) #frame, that houses Combobox for nr-of-lines selection
         dropDown_frame.grid(column=0,row=0,sticky=(N,S,W,E))
 
-        self.graphLinesSelector_frame = Frame(containerFrame)
+        self.graphLinesSelector_frame = Frame(containerFrame) #frame that houses all of the line setup widgets
         self.graphLinesSelector_frame.grid(column=0,row=1,sticky=(N,S,W,E))
 
-        continueButton_frame = Frame(containerFrame)
+        continueButton_frame = Frame(containerFrame) #frame that holds button for continueuing to next (main) page
         continueButton_frame.grid(column=0,row=2,sticky=(S,W,E))
 
-        self.numberOfParams = 1
+        self.numberOfParams = 1 #number of lines; this value gets changed later in the code to either defaultNrOfLines or nr. selected by te user
 
-        options = [1,2,3,4,5,6,7,8,9]
+        options = [i for i in (range(1,10))] #list of possible nr. of lines
 
-        dropDownMenu = Combobox(dropDown_frame,values=options,state="readonly")
-        dropDownMenu.set(self.defaultNrOfLines)
-        dropDownMenu.bind('<<ComboboxSelected>>', self.on_dropDownMenu_select)
+        dropDownMenu = Combobox(dropDown_frame,values=options,state="readonly") #combobox for selecting the nr of lines
+        dropDownMenu.set(self.defaultNrOfLines) #setting default value
+        dropDownMenu.bind('<<ComboboxSelected>>', self.on_dropDownMenu_select) #binding 
         dropDownMenu.grid()
 
 
-        testButton = ttk.Button(continueButton_frame, text="Setup complete, continue to the main page.",command=lambda:self.goToMainPageButtonAction(controller))
-        testButton.grid(padx=10,pady=10)
+        goToNextPageButton = ttk.Button(continueButton_frame, text="Setup complete, continue to the main page.",command=lambda:self.goToMainPageButtonAction(controller))
+        goToNextPageButton.grid(padx=10,pady=10)
 
     def goToMainPageButtonAction(self,controller):
-        for i in range(len(self.labels)):
-            #print(len(self.labels))
-            graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
-            self._dataArrRefference.append(graphLine)
-       # print(self._dataArrRefference[0])
-        if not MP.mainPage in controller.frames.keys():
-            controller.initMainPage()
+        if not controller.data:
+            for i in range(len(self.labels)):
+                graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
+                self._dataArrRefference.append(graphLine)
+            if not MP.mainPage in controller.frames.keys():
+                controller.initMainPage()
         controller.showFrame(MP.mainPage)
+        controller.serialReader.openSerial()
 
 
 
 
     def on_dropDownMenu_select(self,event=None):
-        #print(event)
         self.labels = []
         if event:
             self.numberOfParams = int(event.widget.get())

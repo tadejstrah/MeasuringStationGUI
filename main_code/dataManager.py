@@ -1,11 +1,16 @@
 import csv
 from tkinter import filedialog
 import io
+import mysql.connector
+
+
+
 
 class dataManager():
     def __init__(self,dataArrays):
         self.dataToSave = dataArrays
 
+        
 
     def saveToFile(self):
 

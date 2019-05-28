@@ -137,10 +137,15 @@ class mainPage(ttk.Frame):
     def run(self,i):  #funkcija je klicana vsakih n miliskeund in na grafu nastavi podakte za vse labelje in nastavi limite pogleda
         try:
             if self._dataClass:
-                for x in range(len(self._dataClass)):
-                    self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
+                try:
+                    #print(len(self._dataClass))
+                    for x in range(len(self._dataClass)):
+                        self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
+                except Exception as e:
+                    print(e)
 
                 windowSize = self.windowSize
+            
                 if self._dataClass[0].XData[-1] > windowSize:
                     if self.shouldSerialRead:
                         self.graphLines[1].axes.set_xlim(self._dataClass[0].XData[-1]-windowSize,self._dataClass[0].XData[-1]+self.windowSize/50)
@@ -148,13 +153,13 @@ class mainPage(ttk.Frame):
                 else:
                     self.graphLines[1].axes.relim()
                     self.graphLines[1].axes.autoscale_view()
-                
+            
+
                 if len(self._dataClass) > 1:
                     for x in range(0,len(self.graphLines)-1):
                         self.graphLines[x+1].axes.relim()
                         self.graphLines[x+1].axes.autoscale_view()
-                #self.line2.axes.relim()
-                #self.line2.axes.autoscale_view()
             
-        except: 
-            print("animation func exception")
+        except Exception as e:
+            pass
+            #print(e) 

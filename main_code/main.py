@@ -79,13 +79,13 @@ class measureGUI(ttk.Tk):
         self.serialReader = SerialReader.SerialRead(self.data,self)
         self.serialReader.daemon = True
 
-        mainPageObj = MP.mainPage(self.container, self, self.data,self.serialReader) #container je parent frejma, self je controller, data je refference na graph Lines
-        self.frames[MP.mainPage] = mainPageObj
-        mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
-        mainPageObj.rowconfigure(0,weight=1)
-        mainPageObj.columnconfigure(0,weight=1)
+        self.mainPageObj = MP.mainPage(self.container, self, self.data,self.serialReader) #container je parent frejma, self je controller, data je refference na graph Lines
+        self.frames[MP.mainPage] = self.mainPageObj
+        self.mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
+        self.mainPageObj.rowconfigure(0,weight=1)
+        self.mainPageObj.columnconfigure(0,weight=1)
           
-        self.serialReader.mainPageRefference = mainPageObj
+        self.serialReader.mainPageRefference = self.mainPageObj
         self.serialReader.start()
 
     def printToConsole(self,text,dataConsole):

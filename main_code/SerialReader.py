@@ -10,18 +10,33 @@ from tkinter.ttk import Combobox
 class SerialRead(threading.Thread):
     def __init__(self,dataClass, parent):
 
-        ports = list(serial.tools.list_ports.comports(include_links=False))
-        ports_array = []
 
         self.port = ""
         
         self.ser = None
 
         self.parent = parent
+       
+        #self.openSerial()
+
+        self.lineArray = []
+
+        self.mainPageRefference = None
+        threading.Thread.__init__(self)
+
+        self._dataClass = dataClass
+    
+        self.line = ""
+
+
+    def openSerial(self):
+        ports = list(serial.tools.list_ports.comports(include_links=False))
+        ports_array = []
+
         for p in ports:
             ports_array.append(str(p).split(" ")[0])
         if len(ports) == 0:
-            parent.printToConsole("No com ports were found\n",False)
+           self. parent.printToConsole("No com ports were found\n",False)
             #print("no com ports were found")
             #top = ttk.Toplevel()
         elif len(ports) > 1:  #če je več com portov se odpre dialog za izbiro
@@ -38,19 +53,8 @@ class SerialRead(threading.Thread):
         elif len(ports) == 1:
             self.port = ports_array[0]
             self.ser = serial.Serial(self.port,9600)
-            parent.printToConsole("Serial connection opened \n" if self.ser.isOpen() else "Serial connection not opened \n",False)
+            self.parent.printToConsole("Serial connection opened \n" if self.ser.isOpen() else "Serial connection not opened \n",False)
             #print(self.ser.isOpen())
-
-
-
-        self.lineArray = []
-
-        self.mainPageRefference = None
-        threading.Thread.__init__(self)
-
-        self._dataClass = dataClass
-    
-        self.line = ""
 
     def closeSerialConnection(self):
         self.ser.close()
