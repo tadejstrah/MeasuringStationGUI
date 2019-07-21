@@ -69,7 +69,7 @@ class mainPage(ttk.Frame):
         toolbar.update()
 
         
-        self.ani = FuncAnimation(fig, self. run, interval=1000,repeat=True)
+        self.ani = FuncAnimation(fig, self. run, interval=100,repeat=True)
 
         commandsFrame = ttk.Frame(self)
         commandsFrame.grid(column=1,row=0,sticky=(E,W,N))
