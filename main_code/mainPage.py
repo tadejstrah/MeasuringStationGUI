@@ -29,7 +29,7 @@ class mainPage(ttk.Frame):
 
         self.dataManager = dataManager(dataClass)
 
-        self.windowSize = 10
+        self.windowSize = 10 # velikost okna, ki se izrisuje, i think da so to sekunde
 
         self.shouldSerialRead= False
         self._dataClass = dataClass
@@ -69,7 +69,7 @@ class mainPage(ttk.Frame):
         toolbar.update()
 
         
-        self.ani = FuncAnimation(fig, self. run, interval=100,repeat=True)
+        self.ani = FuncAnimation(fig, self. run, interval=1000,repeat=True)
 
         commandsFrame = ttk.Frame(self)
         commandsFrame.grid(column=1,row=0,sticky=(E,W,N))
@@ -130,6 +130,8 @@ class mainPage(ttk.Frame):
 
     def goBackToSetupPage(self,controller):
         controller.showFrame(SP.setupPage)
+        self.shouldSerialRead = False
+        time.sleep(0.01)
         self.serialReaderRef.closeSerialConnection()
 
 
@@ -138,28 +140,33 @@ class mainPage(ttk.Frame):
         try:
             if self._dataClass:
                 try:
-                    #print(len(self._dataClass))
+                    #print(len(self._dataClass[1].XData))
+                    
                     for x in range(len(self._dataClass)):
                         self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
                 except Exception as e:
+                    print("nekineki")
                     print(e)
 
                 windowSize = self.windowSize
-            
-                if self._dataClass[0].XData[-1] > windowSize:
-                    if self.shouldSerialRead:
-                        self.graphLines[1].axes.set_xlim(self._dataClass[0].XData[-1]-windowSize,self._dataClass[0].XData[-1]+self.windowSize/50)
+                if self._dataClass[0].XData:
+                    #print(self._dataClass[0].XData[-1])
+                    if self._dataClass[0].XData[-1] > windowSize:
+                        if self.shouldSerialRead:
+                            self.graphLines[1].axes.set_xlim(self._dataClass[0].XData[-1]-windowSize,self._dataClass[0].XData[-1]+self.windowSize/50)
 
-                else:
-                    self.graphLines[1].axes.relim()
-                    self.graphLines[1].axes.autoscale_view()
-            
+                    else:
+                        self.graphLines[1].axes.relim()
+                        self.graphLines[1].axes.autoscale_view()
+                
 
-                if len(self._dataClass) > 1:
-                    for x in range(0,len(self.graphLines)-1):
-                        self.graphLines[x+1].axes.relim()
-                        self.graphLines[x+1].axes.autoscale_view()
-            
+                    if len(self._dataClass) > 1:
+                        for x in range(0,len(self.graphLines)-1):
+                            self.graphLines[x+1].axes.relim()
+                            self.graphLines[x+1].axes.autoscale_view()
+                
         except Exception as e:
+            print(e)
+            print("exception on main page run func")
             pass
             #print(e) 

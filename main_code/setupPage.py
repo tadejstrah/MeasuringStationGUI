@@ -8,6 +8,8 @@ import GraphLine
 
 from tkinter.ttk import *
 
+import dataManager
+
 class setupPage(ttk.Frame):
 
     def __init__(self,parent,controller,dataArrRefference):
@@ -16,6 +18,8 @@ class setupPage(ttk.Frame):
         self.defaultNrOfLines = 5
 
         self.labels=[] #array of label widgets
+
+        self.dataManager = dataManager.dataManager(dataArrRefference)
 
         #configuration of container frame - takes care of rescaling,...
         containerFrame = Frame(self)
@@ -37,8 +41,11 @@ class setupPage(ttk.Frame):
         self.graphLinesSelector_frame = Frame(containerFrame) #frame that houses all of the line setup widgets
         self.graphLinesSelector_frame.grid(column=0,row=1,sticky=(N,S,W,E))
 
+        openFileButton_frame = Frame(containerFrame)
+        openFileButton_frame.grid(column=0, row=2, sticky=(N,S,W,E))
+
         continueButton_frame = Frame(containerFrame) #frame that holds button for continueuing to next (main) page
-        continueButton_frame.grid(column=0,row=2,sticky=(S,W,E))
+        continueButton_frame.grid(column=0,row=3,sticky=(S,W,E))
 
         self.numberOfParams = 1 #number of lines; this value gets changed later in the code to either defaultNrOfLines or nr. selected by te user
 
@@ -49,12 +56,31 @@ class setupPage(ttk.Frame):
         dropDownMenu.bind('<<ComboboxSelected>>', self.on_dropDownMenu_select) #binding 
         dropDownMenu.grid()
 
+        openFileButton = ttk.Button(openFileButton_frame, text="Open File", command=lambda: self.setDataFromOpenedFile(controller))
+        openFileButton.grid(padx=10,pady=10)
 
         goToNextPageButton = ttk.Button(continueButton_frame, text="Setup complete, continue to the main page.",command=lambda:self.goToMainPageButtonAction(controller))
         goToNextPageButton.grid(padx=10,pady=10)
 
+
+    def setDataFromOpenedFile(self, controller):
+        controller.data = self.dataManager.openFile()
+        #print(controller.data)
+        #print(self.dataArrRefference)
+        if not MP.mainPage in controller.frames.keys():
+                controller.initMainPage()
+        controller.showFrame(MP.mainPage)
+        #print(self.dataArrRefference[0].XData)
+
+
     def goToMainPageButtonAction(self,controller):
+        if controller.data:
+            for i in controller.serialReader._dataClass:
+                i.XData = []
+                i.YData = []
+    
         if not controller.data:
+
             for i in range(len(self.labels)):
                 graphLine = GraphLine.GraphLine(self.colorComboBoxes[i].get(),self.axisComboBoxes[i].get(),self.nameInputs[i].get())
                 self._dataArrRefference.append(graphLine)

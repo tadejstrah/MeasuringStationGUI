@@ -76,6 +76,9 @@ class measureGUI(ttk.Tk):
     def initMainPage(self):
         #("init main page")
         #self.serialReader = None
+        #print(self.data[0][0]._axis)
+        #self.data = self.data[0]
+        #print(self.data)
         self.serialReader = SerialReader.SerialRead(self.data,self)
         self.serialReader.daemon = True
 

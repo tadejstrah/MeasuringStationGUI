@@ -27,7 +27,12 @@ class SerialRead(threading.Thread):
         self._dataClass = dataClass
     
         self.line = ""
-
+        if False:
+            for x in self._dataClass:
+                for i in [1.1,2,3,3,5,6]:
+                    x.XData.append(i)
+                    x.YData.append(i+1)
+            
 
     def openSerial(self):
         ports = list(serial.tools.list_ports.comports(include_links=False))
@@ -58,7 +63,7 @@ class SerialRead(threading.Thread):
 
     def closeSerialConnection(self):
         self.ser.close()
-        print(self.ser)
+        #print(self.ser)
 
     def setComPort(self, combobox,top):
         print(combobox.get())
@@ -130,24 +135,18 @@ class SerialRead(threading.Thread):
                                     shouldCalcDiff = False
                                     passOne = False
         
-                            elif True:#len(self.lineArray) >5:
-                               # print(self.lineArray[0])
+                            else:
                                 for x in range(1,len(self.lineArray)):
-                                    #print(x-1)
                                     if self._dataClass[x-1] and self.lineArray[x]:
                                         self._dataClass[x-1].XData.append(timeArd-diff)
                                         self._dataClass[x-1].YData.append(self.lineArray[x])
-                                #self._dataClass[0].XData.append(timeArd - diff)
-                                #self._dataClass[0].YData.append(self.lineArray[5])
+               
                 else:
                     time.sleep(0.01)
                     pass
-                    #if self.ser:
-                    #    if self.ser.isOpen():
-                    #      self.ser.flushInput()
-                            #self.ser.read()
+
         
         except Exception as e:
-            print(e)
+
             print("exception on serial reader therad run")            
-        
+            print(e)
