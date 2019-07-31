@@ -15,7 +15,7 @@ class SerialRead(threading.Thread):
         
         self.ser = None
 
-        self.parent = parent
+        self.parent = parent 
        
         #self.openSerial()
 
@@ -42,8 +42,6 @@ class SerialRead(threading.Thread):
             ports_array.append(str(p).split(" ")[0])
         if len(ports) == 0:
            self. parent.printToConsole("No com ports were found\n",False)
-            #print("no com ports were found")
-            #top = ttk.Toplevel()
         elif len(ports) > 1:  #če je več com portov se odpre dialog za izbiro
             top = ttk.Toplevel()
             top.title("Choose a COM port")
@@ -62,7 +60,8 @@ class SerialRead(threading.Thread):
             #print(self.ser.isOpen())
 
     def closeSerialConnection(self):
-        self.ser.close()
+        if self.ser:
+            self.ser.close()
         #print(self.ser)
 
     def setComPort(self, combobox,top):

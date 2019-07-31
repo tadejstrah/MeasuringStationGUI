@@ -105,7 +105,7 @@ class mainPage(ttk.Frame):
             lineCheckbox = ttk.Checkbutton(lineFrame, text =dataClass[x]._name, var=var, command=self.callBackFunc)
             lineCheckbox.grid(row=0,column=1)
 
-        saveDataButton = ttk.Button(commandsFrame, text="Save data to csv",command=self.dataManager.saveToFile)
+        saveDataButton = ttk.Button(commandsFrame, text="Save data to csv",command=lambda:self.dataManager.saveToFile(self._dataClass))
         saveDataButton.grid(column=1,row=15,pady=10)
     
 
@@ -114,7 +114,7 @@ class mainPage(ttk.Frame):
             self.graphLines[x].set_visible(self.checkboxes[x].get())
            # (self.checkboxes[x].get())
         #print("callback func")
-
+ 
     def setWindowSize(self,windowSizeEntry):
         winSize = windowSizeEntry.get()
         if winSize.isdigit():
@@ -126,7 +126,7 @@ class mainPage(ttk.Frame):
         else:
             self.controller.printToConsole("Window size must be a positive integer, not"+str(winSize)+"\n",False)
 
-        
+         
 
     def goBackToSetupPage(self,controller):
         controller.showFrame(SP.setupPage)
@@ -150,7 +150,6 @@ class mainPage(ttk.Frame):
 
                 windowSize = self.windowSize
                 if self._dataClass[0].XData:
-                    #print(self._dataClass[0].XData[-1])
                     if self._dataClass[0].XData[-1] > windowSize:
                         if self.shouldSerialRead:
                             self.graphLines[1].axes.set_xlim(self._dataClass[0].XData[-1]-windowSize,self._dataClass[0].XData[-1]+self.windowSize/50)

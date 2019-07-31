@@ -4,10 +4,10 @@ from tkinter import N,S,W,E
 import mainPage as MP
 from tkinter import IntVar
 from tkinter.colorchooser import *
-import GraphLine
+import GraphLine 
 
 from tkinter.ttk import *
-
+ 
 import dataManager
 
 class setupPage(ttk.Frame):
@@ -70,6 +70,7 @@ class setupPage(ttk.Frame):
         if not MP.mainPage in controller.frames.keys():
                 controller.initMainPage()
         controller.showFrame(MP.mainPage)
+        controller.serialReader.openSerial()
         #print(self.dataArrRefference[0].XData)
 
 

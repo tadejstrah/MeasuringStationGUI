@@ -12,7 +12,7 @@ import GraphLine
 
 class measureGUI(ttk.Tk):
     def __init__(self,*args,**kwargs):
-        ttk.Tk.__init__(self,*args,**kwargs)
+        ttk.Tk.__init__(self,*args,**kwargs) 
         ttk.Tk.wm_title(self,"measureGUI")
 
         #self.ser = None
@@ -74,11 +74,7 @@ class measureGUI(ttk.Tk):
         frame.lift()
 
     def initMainPage(self):
-        #("init main page")
-        #self.serialReader = None
-        #print(self.data[0][0]._axis)
-        #self.data = self.data[0]
-        #print(self.data)
+
         self.serialReader = SerialReader.SerialRead(self.data,self)
         self.serialReader.daemon = True
 
@@ -103,7 +99,7 @@ class measureGUI(ttk.Tk):
             self.notificationsConsole.see("end")
             self.notificationsConsole.configure(state="disabled") 
 
-#@line_profiler
+#@line_profiler 
 def main():
     app = measureGUI()
     app.rowconfigure(0,weight=1)
