@@ -5,7 +5,7 @@ import mainPage as MP
 from tkinter import IntVar
 from tkinter.colorchooser import *
 import GraphLine 
-
+import csv
 from tkinter.ttk import *
  
 import dataManager
@@ -87,6 +87,16 @@ class setupPage(ttk.Frame):
                 self._dataArrRefference.append(graphLine)
             if not MP.mainPage in controller.frames.keys():
                 controller.initMainPage()
+
+            
+        with open("settingsCache.txt", mode="w", newline="\n") as cacheFile:
+            cacheFile.truncate()
+            csv_writer = csv.writer(cacheFile, delimiter=";") 
+            for line in self._dataArrRefference:
+                #print(line._name, line._axis, line._color)
+                csv_writer.writerow([line._name, line._axis, line._color])
+            cacheFile.close()
+
         controller.showFrame(MP.mainPage)
         controller.serialReader.openSerial()
 
@@ -95,38 +105,72 @@ class setupPage(ttk.Frame):
 
     def on_dropDownMenu_select(self,event=None):
         self.labels = []
-        if event:
-            self.numberOfParams = int(event.widget.get())
+        if not event:
+            try:
+                with open("settingsCache.txt", mode="r") as cacheFile:
+                    csv_reader = csv.reader(cacheFile, delimiter = ";")
+                    counter = 0
+                    for row in csv_reader:
+                        #print(row)
+                    
+                        label = Label(self.graphLinesSelector_frame, text=str(counter))
+                        label.grid(row=counter, column=0, padx=10, pady=0)
+                        self.labels.append(label)
+
+                        nameInput = ttk.Entry(self.graphLinesSelector_frame)
+                        nameInput.insert(0,row[0])
+                        nameInput.grid(row=counter, column=1)
+                        self.nameInputs.append(nameInput)
+
+                        axisCombobox = Combobox(self.graphLinesSelector_frame, values=["A","°","V"], state="readonly")
+                        axisCombobox.set(row[1])
+                        axisCombobox.grid(row=counter, column=2)
+                        self.axisComboBoxes.append(axisCombobox)
+                        
+                        self.colorValues = ["red","blue","gold","green","black","purple","pink","yellow","brown"]
+                        colorCombobox = Combobox(self.graphLinesSelector_frame,values=self.colorValues,state="readonly")
+                        colorCombobox.set(row[2])
+                        colorCombobox.bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
+                        colorCombobox.grid(row=counter,column=3)
+                        self.colorComboBoxes.append(colorCombobox)
+
+                        counter += 1
+            except Exception as e:
+                print(e)
+                print("neki druzga")
         else:
-            self.numberOfParams = self.defaultNrOfLines
-        for i in range(self.numberOfParams):
-            self.labels.append(Label())
-            self.colorComboBoxes.append(Combobox())
-            self.axisComboBoxes.append(Combobox())
-            self.nameInputs.append(ttk.Entry())
-
-        for child in self.graphLinesSelector_frame.winfo_children():
-            child.destroy()
-        for i in range(self.numberOfParams):
-            self.labels[i] = Label(self.graphLinesSelector_frame,text=(str(i+1)))
-            self.labels[i].grid(row=i,column=0,pady=3,padx=10)
-
-            self.nameInputs[i] = ttk.Entry(self.graphLinesSelector_frame)
-            self.nameInputs[i].insert(0,"Label  " +str(i+1))
-            self.nameInputs[i].grid(row=i,column=1)
-
-            self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["mA","°"],state="readonly")
-            if i == 4:
-                self.axisComboBoxes[i].set("°")
+            if event:
+                self.numberOfParams = int(event.widget.get())
             else:
-                self.axisComboBoxes[i].set("mA")
-            self.axisComboBoxes[i].grid(row=i,column=2,padx=3)
+                self.numberOfParams = self.defaultNrOfLines
+            for i in range(self.numberOfParams):
+                self.labels.append(Label())
+                self.colorComboBoxes.append(Combobox())
+                self.axisComboBoxes.append(Combobox())
+                self.nameInputs.append(ttk.Entry())
 
-            self.colorValues = ["red","blue","gold","green","black","purple","pink","yellow","brown"]
-            self.colorComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=self.colorValues,state="readonly")
-            self.colorComboBoxes[i].set(self.colorValues[i])
-            self.colorComboBoxes[i].bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
-            self.colorComboBoxes[i].grid(row=i,column=3)
+            for child in self.graphLinesSelector_frame.winfo_children():
+                child.destroy()
+            for i in range(self.numberOfParams):
+                self.labels[i] = Label(self.graphLinesSelector_frame,text=(str(i+1)))
+                self.labels[i].grid(row=i,column=0,pady=3,padx=10)
+
+                self.nameInputs[i] = ttk.Entry(self.graphLinesSelector_frame)
+                self.nameInputs[i].insert(0,"Label  " +str(i+1))
+                self.nameInputs[i].grid(row=i,column=1)
+
+                self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["A","°","V"],state="readonly")
+                if i == 4:
+                    self.axisComboBoxes[i].set("°")
+                else:
+                    self.axisComboBoxes[i].set("mA")
+                self.axisComboBoxes[i].grid(row=i,column=2,padx=3)
+
+                self.colorValues = ["red","blue","gold","green","black","purple","pink","yellow","brown"]
+                self.colorComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=self.colorValues,state="readonly")
+                self.colorComboBoxes[i].set(self.colorValues[i])
+                self.colorComboBoxes[i].bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
+                self.colorComboBoxes[i].grid(row=i,column=3)
 
     def on_colorMenuDropdown_select(self,event):
         if event:
