@@ -102,16 +102,16 @@ class setupPage(ttk.Frame):
 
 
 
-
+    #ko user na dropdownu izbere vrednost se zgenerira UI (usi labeli, doprdowni...)
     def on_dropDownMenu_select(self,event=None):
         self.labels = []
         if not event:
+            #proba prebrat cache settinge ob startupu (torej če ni event)
             try:
                 with open("settingsCache.txt", mode="r") as cacheFile:
                     csv_reader = csv.reader(cacheFile, delimiter = ";")
                     counter = 0
                     for row in csv_reader:
-                        #print(row)
                     
                         label = Label(self.graphLinesSelector_frame, text=str(counter))
                         label.grid(row=counter, column=0, padx=10, pady=0)
@@ -138,6 +138,7 @@ class setupPage(ttk.Frame):
             except Exception as e:
                 print(e)
                 print("neki druzga")
+        #če je event (torej ne startup) se zgodi sledeče
         else:
             if event:
                 self.numberOfParams = int(event.widget.get())
@@ -172,6 +173,8 @@ class setupPage(ttk.Frame):
                 self.colorComboBoxes[i].bind('<<ComboboxSelected>>', self.on_colorMenuDropdown_select)
                 self.colorComboBoxes[i].grid(row=i,column=3)
 
+
+    #ko user selecta barvo se pobarva label - TODO implementaj da se pobarva tudi ko naloži iz cacha
     def on_colorMenuDropdown_select(self,event):
         if event:
             self.labels[int(event.widget.grid_info()["row"])].configure(background=event.widget.get()) #iz pozicije comboboxa na gridu najde indeks labela v arrayu in mu accordingly changa barvo

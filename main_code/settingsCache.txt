@@ -1,8 +1,5 @@
-fjsdkhgvdfisjcklx;mA;green
-Label  2;mA;blue
+Lab23423;°;red
+Label  2;V;blue
 Label  3;mA;gold
 Label  4;mA;green
 Label  5;°;black
-Label  vsdf;mA;purple
-Label  7;mA;pink
-Label  8;mA;yellow

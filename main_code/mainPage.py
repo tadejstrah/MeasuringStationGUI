@@ -102,18 +102,17 @@ class mainPage(ttk.Frame):
 
             var = ttk.BooleanVar(value=True)
             self.checkboxes.append(var)
-            lineCheckbox = ttk.Checkbutton(lineFrame, text =dataClass[x]._name, var=var, command=self.callBackFunc)
+            lineCheckbox = ttk.Checkbutton(lineFrame, text =dataClass[x]._name, var=var, command=self.setVisibilityOfLine)
             lineCheckbox.grid(row=0,column=1)
 
         saveDataButton = ttk.Button(commandsFrame, text="Save data to csv",command=lambda:self.dataManager.saveToFile(self._dataClass))
         saveDataButton.grid(column=1,row=15,pady=10)
     
 
-    def callBackFunc(self):
+    def setVisibilityOfLine(self):
         for x in range(len(self.checkboxes)):
             self.graphLines[x].set_visible(self.checkboxes[x].get())
-           # (self.checkboxes[x].get())
-        #print("callback func")
+
  
     def setWindowSize(self,windowSizeEntry):
         winSize = windowSizeEntry.get()
@@ -139,9 +138,7 @@ class mainPage(ttk.Frame):
     def run(self,i):  #funkcija je klicana vsakih n miliskeund in na grafu nastavi podakte za vse labelje in nastavi limite pogleda
         try:
             if self._dataClass:
-                try:
-                    #print(len(self._dataClass[1].XData))
-                    
+                try:                    
                     for x in range(len(self._dataClass)):
                         self.graphLines[x].set_data(self._dataClass[x].XData, self._dataClass[x].YData)
                 except Exception as e:
@@ -167,5 +164,3 @@ class mainPage(ttk.Frame):
         except Exception as e:
             print(e)
             print("exception on main page run func")
-            pass
-            #print(e) 

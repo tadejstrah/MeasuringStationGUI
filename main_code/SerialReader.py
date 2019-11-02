@@ -16,8 +16,6 @@ class SerialRead(threading.Thread):
         self.ser = None
 
         self.parent = parent 
-       
-        #self.openSerial()
 
         self.lineArray = []
 
@@ -75,14 +73,11 @@ class SerialRead(threading.Thread):
     def run(self):
         try:
             prev = False
-            #sizeOfArr = 1
             shouldCalcDiff = False
             diff = 0
             strToPrint = ""
             counter1 = 0
-            #time.sleep(0.1)
             while True:
-                #time.sleep(0.01)
                 shouldRead = self.mainPageRefference.shouldSerialReadFunc()
                 if not shouldRead == prev: #če pride do spremembe state-a (pauza, zdaj) serial branja pol pobriše srial input ap zračuna difference cajta k se spet zalaufa read
                     if self.ser: 
