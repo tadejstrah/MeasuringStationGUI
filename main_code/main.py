@@ -15,6 +15,8 @@ class measureGUI(ttk.Tk):
         ttk.Tk.__init__(self,*args,**kwargs) 
         ttk.Tk.wm_title(self,"measureGUI")
 
+        #self.ser = None
+
 #container frame setup
         self.container = ttk.Frame(self)
         self.container.grid(row=0,column=0,sticky = (N,S,E,W))
@@ -59,10 +61,15 @@ class measureGUI(ttk.Tk):
         setupPageObj.rowconfigure(0,weight=1)
         setupPageObj.columnconfigure(0,weight=1)
         setupPageObj.on_dropDownMenu_select(None)
+        #self.serialReader = None
+       # self.initMainPage()
+
 
         self.showFrame(SP.setupPage) #initiall page je setupPage
 
     def showFrame(self,frameToShowName):
+        #print(frameToShowName)
+        #print(self.frames.keys())
         frame = self.frames[frameToShowName]
         print(frame)
         frame.lift()
@@ -83,8 +90,10 @@ class measureGUI(ttk.Tk):
 
     def printToConsole(self,text,dataConsole):
         if dataConsole:
+            #self.dataConsole.configure(state="normal")
             self.dataConsole.insert(END, text)
             self.dataConsole.see("end")
+           # self.dataConsole.configure(state="disabled")
         else:
             self.notificationsConsole.configure(state="normal")
             self.notificationsConsole.insert(END, text)
