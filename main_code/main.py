@@ -71,7 +71,6 @@ class measureGUI(ttk.Tk):
         #print(frameToShowName)
         #print(self.frames.keys())
         frame = self.frames[frameToShowName]
-        print(frame)
         frame.lift()
 
     def initMainPage(self):
