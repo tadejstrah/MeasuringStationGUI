@@ -3,7 +3,7 @@ from tkinter import N,S,W,E
 
 
 class setupView(tk.Frame):
-    def __init__(self,parent, frame):
+    def __init__(self, parent, frame):
         tk.Frame.__init__(self,parent)
         print("setupView sucessfully inited")
 
