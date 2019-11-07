@@ -64,6 +64,7 @@ class measureGUI(ttk.Tk):
 
     def showFrame(self,frameToShowName):
         frame = self.frames[frameToShowName]
+        print(frame)
         frame.lift()
 
     def initMainPage(self):

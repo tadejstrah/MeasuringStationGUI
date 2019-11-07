@@ -13,13 +13,17 @@ class container(tk.Frame):
         print("showPage: " + name)
         if name in self.__initedFrameNames:
             self.__frames[name][1].frame = frame
+            print("if name in framenames" + str(self.__frames[name]))
             self.__frames[name][1].lift()
-            print(self.__frames)
+           # self.__frames[name][1].grid(row=0, column=0, sticky = "N S W E")
 
         else:
             page = self.__initPage(name, frame)
-            page.lift()
             self.__initedFrameNames.append(name)
+            self.__frames[name][1].lift()
+            print("if name NOT in framenames" + str(self.__frames[name]))
+
+            #page.lift()
             #print(self.__initedFrameNames)
 
 
@@ -40,6 +44,7 @@ class container(tk.Frame):
         initedView.grid(row=0, column=0)
         initedView.rowconfigure(0,weight=1)
         initedView.columnconfigure(0,weight=1)
+        print("InitedView " + str(initedView))
         
         initedController = controllerClass(initedView, initedModel)
         self.__frames[name] = (initedController, initedView, initedModel,)

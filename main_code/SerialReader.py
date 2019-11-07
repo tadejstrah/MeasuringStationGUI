@@ -55,12 +55,10 @@ class SerialRead(threading.Thread):
             self.port = ports_array[0]
             self.ser = serial.Serial(self.port,9600)
             self.parent.printToConsole("Serial connection opened \n" if self.ser.isOpen() else "Serial connection not opened \n",False)
-            #print(self.ser.isOpen())
 
     def closeSerialConnection(self):
         if self.ser:
             self.ser.close()
-        #print(self.ser)
 
     def setComPort(self, combobox,top):
         print(combobox.get())
