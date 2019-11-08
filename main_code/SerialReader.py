@@ -55,7 +55,7 @@ class SerialRead(threading.Thread):
             button.pack()
         elif len(ports) == 1:
             self.port = ports_array[0]
-            self.ser = serial.Serial(self.port,9600)
+            self.ser = serial.Serial(self.port,38400)
             self.parent.printToConsole("Serial connection opened \n" if self.ser.isOpen() else "Serial connection not opened \n",False)
             #print(self.ser.isOpen())
 
@@ -128,9 +128,14 @@ class SerialRead(threading.Thread):
                             if shouldCalcDiff:
                                 if passOne:
                                     passOne = False
+                                    print("Pass one")
                                     pass
                                 else:
-                                    diff = timeArd - self._dataClass[0].XData[-1]
+                                    #print(self._dataClass[0].XData[-1])
+                                    #print(self._dataClass[0].XData)
+                                    if self._dataClass[0].XData[-1]:
+                                        print("self._dataClass[0].XData[-1] obviously exists")
+                                        diff = timeArd - self._dataClass[0].XData[-1]
                                     shouldCalcDiff = False
                                     passOne = False
         

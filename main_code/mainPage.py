@@ -53,7 +53,7 @@ class mainPage(ttk.Frame):
             self.graphLines.append("")
 
         for x in range(len(self._dataClass)):
-            if self._dataClass[x]._axis == "mA":
+            if self._dataClass[x]._axis == "A":
                 self.graphLines[x], = ax1.plot(0,0)
             else:
                 self.graphLines[x], = ax2.plot(0,0)

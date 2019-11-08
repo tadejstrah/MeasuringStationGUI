@@ -122,7 +122,7 @@ class setupPage(ttk.Frame):
                         nameInput.grid(row=counter, column=1)
                         self.nameInputs.append(nameInput)
 
-                        axisCombobox = Combobox(self.graphLinesSelector_frame, values=["A","°","V"], state="readonly")
+                        axisCombobox = Combobox(self.graphLinesSelector_frame, values=["A","V"], state="readonly")
                         axisCombobox.set(row[1])
                         axisCombobox.grid(row=counter, column=2)
                         self.axisComboBoxes.append(axisCombobox)
@@ -159,9 +159,9 @@ class setupPage(ttk.Frame):
                 self.nameInputs[i].insert(0,"Label  " +str(i+1))
                 self.nameInputs[i].grid(row=i,column=1)
 
-                self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["A","°","V"],state="readonly")
+                self.axisComboBoxes[i] = Combobox(self.graphLinesSelector_frame,values=["A","V"],state="readonly")
                 if i == 4:
-                    self.axisComboBoxes[i].set("°")
+                    self.axisComboBoxes[i].set("V")
                 else:
                     self.axisComboBoxes[i].set("mA")
                 self.axisComboBoxes[i].grid(row=i,column=2,padx=3)

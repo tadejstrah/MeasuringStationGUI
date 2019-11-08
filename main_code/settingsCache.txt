@@ -1,8 +1,8 @@
-fjsdkhgvdfisjcklx;mA;green
-Label  2;mA;blue
-Label  3;mA;gold
-Label  4;mA;green
-Label  5;°;black
-Label  vsdf;mA;purple
-Label  7;mA;pink
-Label  8;mA;yellow
+Label  1;A;red
+Label  2;A;green
+Label  3;V;gold
+Label  4;V;green
+Label  5;V;black
+Label  6;V;purple
+Label  7;A;pink
+Label  8;A;yellow
