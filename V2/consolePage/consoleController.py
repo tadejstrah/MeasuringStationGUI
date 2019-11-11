@@ -1,7 +1,13 @@
 
 
 class consoleController():
-    def __init__(self, view, model):
+    def __init__(self, view, parent):
         self.view = view
-        self.model = model
-        
+        view.controller = self
+        view.draw()
+    
+    def printToLeftConsole(self,string):
+        self.view.printToLeftConsole(string)
+
+    def printToRightConsole(self,string):
+        self.view.printToRightConsole(string)

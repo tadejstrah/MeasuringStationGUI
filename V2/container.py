@@ -10,21 +10,18 @@ class container(tk.Frame):
         self.__initedFrameNames = []
 
     def showPage(self,name,frame):
+        print()
         print("showPage: " + name)
         if name in self.__initedFrameNames:
-            self.__frames[name][1].frame = frame
-            print("if name in framenames" + str(self.__frames[name]))
-            self.__frames[name][1].lift()
-           # self.__frames[name][1].grid(row=0, column=0, sticky = "N S W E")
+            #print(frame)
+            self.__frames[name][1].tkraise()
+            self.__frames[name][1].grid(row=0, column=0, sticky = "N S W E")
 
         else:
             page = self.__initPage(name, frame)
             self.__initedFrameNames.append(name)
-            self.__frames[name][1].lift()
-            print("if name NOT in framenames" + str(self.__frames[name]))
+            self.__frames[name][1].tkraise()
 
-            #page.lift()
-            #print(self.__initedFrameNames)
 
 
 
@@ -36,20 +33,17 @@ class container(tk.Frame):
         controllerPackage = importlib.import_module("." + str(name) + "Controller", name+"Page")
         controllerClass = getattr(controllerPackage,name + "Controller")
 
-        modelPackage = importlib.import_module("." + str(name) + "Model", name+"Page")
-        modelClass = getattr(modelPackage,name + "Model")
-
-        initedModel = modelClass()
         initedView = viewClass(self,frame)
-        initedView.grid(row=0, column=0)
+        initedView.grid(row=0, column=0, sticky= "N S W E")
         initedView.rowconfigure(0,weight=1)
         initedView.columnconfigure(0,weight=1)
-        print("InitedView " + str(initedView))
+        print("InitedView: " + str(initedView))
         
-        initedController = controllerClass(initedView, initedModel)
-        self.__frames[name] = (initedController, initedView, initedModel,)
+        initedController = controllerClass(initedView, self)
+        #initedView.controller = initedController
+        
+        self.__frames[name] = (initedController, initedView,)
         return initedView
-
 
     def getControllerRefferenceOf(self, name):
         return self.__frames[name][0]

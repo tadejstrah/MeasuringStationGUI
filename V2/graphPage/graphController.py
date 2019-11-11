@@ -1,6 +1,7 @@
 
 
 class graphController():
-    def __init__(self, view, model):
+    def __init__(self, view, parent):
         self.view = view
-        self.model = model
+        view.controller = self
+        view.draw()
