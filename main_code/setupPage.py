@@ -123,7 +123,7 @@ class setupPage(ttk.Frame):
                         self.nameInputs.append(nameInput)
 
                         axisCombobox = Combobox(self.graphLinesSelector_frame, values=["A","V"], state="readonly")
-                        axisCombobox.set(row[1])
+                        axisCombobox.set(row[1])    
                         axisCombobox.grid(row=counter, column=2)
                         self.axisComboBoxes.append(axisCombobox)
                         

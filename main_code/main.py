@@ -77,7 +77,7 @@ class measureGUI(ttk.Tk):
 
         self.serialReader = SerialReader.SerialRead(self.data,self)
         self.serialReader.daemon = True
-
+    
         self.mainPageObj = MP.mainPage(self.container, self, self.data,self.serialReader) #container je parent frejma, self je controller, data je refference na graph Lines
         self.frames[MP.mainPage] = self.mainPageObj
         self.mainPageObj.grid(row=0,column=0,sticky=(N,S,W,E))
