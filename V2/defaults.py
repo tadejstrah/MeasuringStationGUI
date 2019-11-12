@@ -1,6 +1,7 @@
 import os
 
 cachedSettingsPath = os.getcwd()
-initialNrOfLineSettings = 15
-axisOptions = ["A", "V", "°"]
-predefinedColors = ["orange","red","tomato","medium blue","blue","dodger blue","yellow","gold","goldenrod","dark green","green","olive drab","black","purple","pink","brown"]
+initialNrOfLineSettings = 3
+maxNrOfLines = 20
+axisOptions = ["A", "V", "°"] #max 3
+predefinedColors = ["orange","red","tomato","medium blue","blue","dodger blue","yellow","gold","goldenrod","dark green","green","olive drab","purple","pink","brown"]

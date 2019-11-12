@@ -34,12 +34,12 @@ class consoleView(tk.Frame):
 
     def printToLeftConsole(self, string):
         self.dataConsole.configure(state = "normal")
-        self.dataConsole.insert(END, string)
+        self.dataConsole.insert(END, string + "\n")
         self.dataConsole.see("end")
         self.dataConsole.configure(state="disabled")
 
     def printToRightConsole(self, string):
         self.notificationsConsole.configure(state="normal")
-        self.notificationsConsole.insert(END, string)
+        self.notificationsConsole.insert(END, string + "\n")
         self.notificationsConsole.see("end")
         self.notificationsConsole.configure(state="disabled") 

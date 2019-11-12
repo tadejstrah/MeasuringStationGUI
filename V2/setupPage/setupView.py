@@ -18,9 +18,14 @@ class setupView(tk.Frame):
 
         self.masterContainer = tk.Frame(self, bg="red")
         self.masterContainer.grid(row=0, column=0, sticky = (N, S ,W ,E))
+        self.masterContainer.rowconfigure(2, weight=1)
+        self.masterContainer.rowconfigure(10, weight=1)
 
         self.linesSettingsFrame = tk.Frame(self.masterContainer)
-        self.linesSettingsFrame.grid(column=0,row=1,sticky=(N,S,W,E))
+        self.linesSettingsFrame.grid(column=0,row=2,sticky=(N,S,W,E))
+
+        self.addRemoveButtonsContainer = tk.Frame(self.masterContainer)
+        self.addRemoveButtonsContainer.grid(row=1, column = 0, sticky=( N, E,S, W))        
 
 
         self.nameLabels = []
@@ -30,39 +35,73 @@ class setupView(tk.Frame):
         
 
     def draw(self):
-        openFileButton = tk.Button(self.masterContainer, text="Open File", command=lambda:self.parent.showPage("graph", self))
-        openFileButton.grid(padx=10,pady=10, row=0, column=0)    
+
+
+        openFileButton = tk.Button(self.masterContainer, text="Open File", command=self.controller.openFile)
+        openFileButton.grid(padx=10,pady=20, row=0, column=0, sticky=(N, W))    
         
         self.linesSettings = self.controller.genLineSettings()
 
         for index, line in enumerate(self.linesSettings):
-            nameLabel = tk.Label(self.linesSettingsFrame, text= "Label " + str(index))
-            nameLabel.grid(row=index,column=0,pady=3,padx=10)
-            self.nameLabels.append(nameLabel)
+            
+            #if not nameLabels[index] and line.visibility
 
-            nameInput = tk.Entry(self.linesSettingsFrame)
-            nameInput.insert(0,"Label  " +str(index+1))
-            nameInput.grid(row=index, column=1, pady=3, padx=10)
-            self.nameInputs.append(nameInput)
+            
 
-            axisCombobox = Combobox(self.linesSettingsFrame, width=3, state="readonly", values=defaults.axisOptions)
-            axisCombobox.set(defaults.axisOptions[0])
-            axisCombobox.grid(row=index, column=2, pady=3, padx=10)
-            self.axisComboboxes.append(axisCombobox)
+            if not line.visibility: #če črta obstaja ampak jo je treba skrit
+                self.nameLabels[index].grid_remove()
+                self.nameInputs[index].grid_remove()
+                self.axisComboboxes[index].grid_remove()
+                self.colorButtons[index].grid_remove()
 
-            colorButton = tk.Button(self.linesSettingsFrame, text="Choose color", bg=defaults.predefinedColors[index])
-            colorButton.bind('<Button-1>', self.chooseColor)
-            colorButton.grid(row=index, column=3, padx=10, pady=3)
-            self.colorButtons.append(colorButton)
+            elif index+1 > len(self.nameLabels) and line.visibility: #če je črta nova in mora biti vidna naredi novo
+               
+                padx=10
+                pady=3
+                nameLabel = tk.Label(self.linesSettingsFrame, text= line.name)
+                nameLabel.grid(row=index,column=0,pady=pady,padx=padx)
+                self.nameLabels.append(nameLabel)
+
+                nameInput = tk.Entry(self.linesSettingsFrame)
+                nameInput.insert(0,line.name)
+                nameInput.grid(row=index, column=1, pady=pady, padx=padx)
+                self.nameInputs.append(nameInput)
+
+                axisCombobox = Combobox(self.linesSettingsFrame, width=3, state="readonly", values=defaults.axisOptions)
+                axisCombobox.set(line.axis)
+                axisCombobox.grid(row=index, column=2, pady=pady, padx=padx)
+                self.axisComboboxes.append(axisCombobox)
+
+                colorButton = tk.Button(self.linesSettingsFrame, text="Choose color", bg=line.color)
+                colorButton.bind('<Button-1>', self.chooseColor)
+                colorButton.grid(row=index, column=3, padx=padx, pady=pady)
+                self.colorButtons.append(colorButton)
+
+            else: #če črta že obstaja, je skrita in jo je treba odkrit
+                padx=10
+                pady=3
+                self.nameLabels[index].grid(row=index, column=0,pady=pady,padx=padx)
+                self.nameInputs[index].grid(row=index, column=1,pady=pady,padx=padx)
+                self.axisComboboxes[index].grid(row=index, column=2,pady=pady,padx=padx)
+                self.colorButtons[index].grid(row=index, column=3,pady=pady,padx=padx)
+
+        addLineButton = tk.Button(self.addRemoveButtonsContainer, text=" + ", command=self.controller.addLine)
+        addLineButton.grid(row=0, column=0, sticky=(N,S,W,E), padx=10, pady=20)
+
+        removeLineButton = tk.Button(self.addRemoveButtonsContainer, text="  -  ", command=self.controller.removeLine)
+        removeLineButton.grid(row=0, column=1, sticky=(N,S,W,E), padx=10, pady=20)
+
+
+
+        goToNextPageButton = tk.Button(self.masterContainer, text="Go to graph page", command=lambda:self.parent.showPage("graph", self))
+        goToNextPageButton.grid(column=0, row=10, sticky = (W, S), pady=20)
+
 
 
     def chooseColor(self,event):
         color = askcolor()[1]
-        #print(color)
         rowOfCallerButton = int(event.widget.grid_info()["row"])
-        self.colorButtons[rowOfCallerButton].configure(background=color)
-        #self.colorButtons[rowOfCallerButton].config(relief=RAISED)
-        #print(self.colorButtons[rowOfCallerButton].cget('bg'))
-
-    def drawLinesSettings(self, ):
-        pass
+        #print()
+        button = self.colorButtons[rowOfCallerButton]
+        #print("got to here")
+        button.configure(background=color)
