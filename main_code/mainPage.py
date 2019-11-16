@@ -3,7 +3,6 @@ import setupPage as SP
 from random import randint
 from tkinter import N,S,E,W
 
-
 import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib import style

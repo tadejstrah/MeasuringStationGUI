@@ -15,16 +15,15 @@ class setupView(tk.Frame):
 
         self.linesSettings = []
 
-
-        self.masterContainer = tk.Frame(self, bg="red")
+        self.masterContainer = tk.Frame(self, bg= "dark gray")
         self.masterContainer.grid(row=0, column=0, sticky = (N, S ,W ,E))
         self.masterContainer.rowconfigure(2, weight=1)
         self.masterContainer.rowconfigure(10, weight=1)
 
-        self.linesSettingsFrame = tk.Frame(self.masterContainer)
+        self.linesSettingsFrame = tk.Frame(self.masterContainer, bg="dark gray")
         self.linesSettingsFrame.grid(column=0,row=2,sticky=(N,S,W,E))
 
-        self.addRemoveButtonsContainer = tk.Frame(self.masterContainer)
+        self.addRemoveButtonsContainer = tk.Frame(self.masterContainer, bg="dark gray")
         self.addRemoveButtonsContainer.grid(row=1, column = 0, sticky=( N, E,S, W))        
 
 
@@ -43,10 +42,6 @@ class setupView(tk.Frame):
         self.linesSettings = self.controller.genLineSettings()
 
         for index, line in enumerate(self.linesSettings):
-            
-            #if not nameLabels[index] and line.visibility
-
-            
 
             if not line.visibility: #če črta obstaja ampak jo je treba skrit
                 self.nameLabels[index].grid_remove()
@@ -55,7 +50,7 @@ class setupView(tk.Frame):
                 self.colorButtons[index].grid_remove()
 
             elif index+1 > len(self.nameLabels) and line.visibility: #če je črta nova in mora biti vidna naredi novo
-               
+            
                 padx=10
                 pady=3
                 nameLabel = tk.Label(self.linesSettingsFrame, text= line.name)
@@ -85,6 +80,7 @@ class setupView(tk.Frame):
                 self.axisComboboxes[index].grid(row=index, column=2,pady=pady,padx=padx)
                 self.colorButtons[index].grid(row=index, column=3,pady=pady,padx=padx)
 
+
         addLineButton = tk.Button(self.addRemoveButtonsContainer, text=" + ", command=self.controller.addLine)
         addLineButton.grid(row=0, column=0, sticky=(N,S,W,E), padx=10, pady=20)
 
@@ -93,10 +89,19 @@ class setupView(tk.Frame):
 
 
 
-        goToNextPageButton = tk.Button(self.masterContainer, text="Go to graph page", command=lambda:self.parent.showPage("graph", self))
-        goToNextPageButton.grid(column=0, row=10, sticky = (W, S), pady=20)
+        goToNextPageButton = tk.Button(self.masterContainer, text="Go to graph page", command=lambda:self.controller.goToGraphPage())
+        goToNextPageButton.grid(column=0, row=10, sticky = (W, S), pady=20, padx=10)
 
 
+
+    def getData(self):
+        labels, names, axes, colors = [], [], [], []
+        for index, value in enumerate(self.nameLabels):
+            labels.append(self.nameLabels[index]['text'])
+            names.append(self.nameInputs[index].get())
+            axes.append(self.axisComboboxes[index].get())
+            colors.append(self.colorButtons[index]['background'])
+        return[labels, names, axes, colors]
 
     def chooseColor(self,event):
         color = askcolor()[1]

@@ -6,7 +6,7 @@ class setupController():
     def __init__(self, view, parent):
         self.view = view
         view.controller = self
-
+        self.parent = parent
         self.generatedLinesSettings = []
 
         view.draw()
@@ -28,13 +28,13 @@ class setupController():
 
 
     def addLine(self): #dodaj line do te cifre ali jih samo make visible
-        if len(self.generatedLinesSettings)==defaults.maxNrOfLines:
+        nrOfVisibleLines = sum(p.visibility == True for p in self.generatedLinesSettings)
+        if nrOfVisibleLines==defaults.maxNrOfLines:
             self.consoleController.printToRightConsole("You have reached maximum number of lines: " + str(defaults.maxNrOfLines))
             return
         hiddenLinesExist = False
         for line in self.generatedLinesSettings:
             if not line.visibility and not hiddenLinesExist:
-                #print("setting visibilit to True")
                 line.visibility = True
                 hiddenLinesExist = True
                 break
@@ -49,7 +49,6 @@ class setupController():
     def removeLine(self): #removaj line/ make them not visible
         hiddenLinesExist = False
         for index, line in enumerate(reversed(self.generatedLinesSettings)):
-            #print(line.id, line.visibility)
             if not line.visibility:
                 hiddenLinesExist = True
                 if self.generatedLinesSettings[line.id-1].visibility == True:
@@ -69,3 +68,8 @@ class setupController():
     def openFile(self):
         print("implement open file")
         pass
+
+    def goToGraphPage(self):
+        data = self.view.getData()
+        self.parent.showPage("graph", self.view) #inits and transitions
+        self.parent.getControllerRefferenceOf("graph").setData(data)

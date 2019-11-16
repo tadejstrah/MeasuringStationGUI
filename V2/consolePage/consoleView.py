@@ -24,13 +24,13 @@ class consoleView(tk.Frame):
         self.notificationsConsole.config(undo=True,wrap="word")
         self.notificationsConsole.grid(row=0,column=2,sticky=(S,W,E), padx=2,pady=2)
 
-        scrollbar1 = tk.Scrollbar(self.frame,command=self.dataConsole.yview)
-        scrollbar1.grid(row=0,column=1,sticky=(N,S,W,E))
-        self.dataConsole["yscrollcommand"] = scrollbar1.set
+        dataConsoleScrollbar = tk.Scrollbar(self.frame,command=self.dataConsole.yview)
+        dataConsoleScrollbar.grid(row=0,column=1,sticky=(N,S,W,E))
+        self.dataConsole["yscrollcommand"] = dataConsoleScrollbar.set
 
-        scrollbar2 = tk.Scrollbar(self.frame,command=self.notificationsConsole.yview)
-        scrollbar2.grid(row=0,column=3,sticky=(N,S,W,E))
-        self.notificationsConsole["yscrollcommand"] = scrollbar2.set
+        notificationConsoleScrollbar = tk.Scrollbar(self.frame,command=self.notificationsConsole.yview)
+        notificationConsoleScrollbar.grid(row=0,column=3,sticky=(N,S,W,E))
+        self.notificationsConsole["yscrollcommand"] = notificationConsoleScrollbar.set
 
     def printToLeftConsole(self, string):
         self.dataConsole.configure(state = "normal")
