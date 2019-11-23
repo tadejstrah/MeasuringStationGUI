@@ -3,5 +3,6 @@ import os
 cachedSettingsPath = os.getcwd()
 initialNrOfLineSettings = 3
 maxNrOfLines = 20
-axisOptions = ["A", "V", "°"] #max 3
-predefinedColors = ["orange","red","tomato","medium blue","blue","dodger blue","yellow","gold","goldenrod","dark green","green","olive drab","purple","pink","brown"]
+axisOptions = ["A", "V", "°", "q", "ls"]
+predefinedColors = ["#CD5C5C", "#FFA07A", "#FF0000", "#FF1493","#C71585","#FFA500","#FFD700","#FFFF00","#D8BFD8","#EE82EE","#BA55D3","#663399","#8B008B","#ADFF2F","#32CD32","#90EE90","#2E8B57","#808000","#0000FF"]
+lineStyles = ['-', '--', '-.']

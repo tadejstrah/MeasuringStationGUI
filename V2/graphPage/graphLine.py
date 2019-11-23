@@ -7,3 +7,4 @@ class graphLine():
         self.axis = axis
         self.color = color
         self.YData = []
+        self.line = None

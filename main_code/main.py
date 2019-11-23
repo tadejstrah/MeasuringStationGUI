@@ -64,7 +64,7 @@ class measureGUI(ttk.Tk):
         #self.serialReader = None
        # self.initMainPage()
 
-
+ 
         self.showFrame(SP.setupPage) #initiall page je setupPage
 
     def showFrame(self,frameToShowName):
