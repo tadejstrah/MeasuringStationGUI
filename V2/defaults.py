@@ -1,6 +1,6 @@
 import os
 
-cachedSettingsPath = os.getcwd()
+cachedSettingsPath = os.getcwd() + "\cache.json"
 initialNrOfLineSettings = 3
 maxNrOfLines = 20
 axisOptions = ["A", "V", "°", "q", "ls"]

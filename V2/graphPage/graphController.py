@@ -20,7 +20,8 @@ class graphController():
 
     def getData(self):
         if not self.rawData: return []
-        if len(self.data) > 0: return self.data
+        #if len(self.data) > 0: return self.data
+        self.data = []
         for index, value in enumerate(self.rawData[0]):
             graphLine = graphPage.graphLine(index, self.rawData[1][index],self.rawData[2][index], self.rawData[3][index] )  #id, name, axis, color
             self.data.append(graphLine)

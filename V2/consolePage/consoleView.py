@@ -7,7 +7,7 @@ class consoleView(tk.Frame):
 
         self.controller = None
         self.frame = frame
-        print("consoleView sucessfully inited")
+        #print("consoleView sucessfully inited")
  
 
     def draw(self):

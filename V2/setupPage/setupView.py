@@ -97,10 +97,12 @@ class setupView(tk.Frame):
     def getData(self):
         labels, names, axes, colors = [], [], [], []
         for index, value in enumerate(self.nameLabels):
-            labels.append(self.nameLabels[index]['text'])
-            names.append(self.nameInputs[index].get())
-            axes.append(self.axisComboboxes[index].get())
-            colors.append(self.colorButtons[index]['background'])
+            if  self.linesSettings[index].visibility: 
+                labels.append(self.nameLabels[index]['text'])
+                names.append(self.nameInputs[index].get())
+                axes.append(self.axisComboboxes[index].get())
+                colors.append(self.colorButtons[index]['background'])
+        #print("get data:" + str([labels, names, axes, colors]))
         return[labels, names, axes, colors]
 
     def chooseColor(self,event):

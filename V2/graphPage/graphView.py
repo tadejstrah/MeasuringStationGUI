@@ -37,25 +37,29 @@ class graphView(tk.Frame):
         self.toolbarFrame = tk.Frame(self.container)
         self.toolbarFrame.grid(row=2, column=0, sticky=W)
 
-        self.fig = plt.Figure()
-        self.fig.subplots_adjust(left=0.05,right=0.95,bottom=0.05,top=0.96)
-        self.ax1 = self.fig.add_subplot(111)
-
-        plotCanvas = FigureCanvasTkAgg(self.fig, self.container)
-        plotCanvas.get_tk_widget().grid(column=0, row=1, sticky=(N,S,E,W))
-
-        toolbar = NavigationToolbar2Tk(plotCanvas, self.toolbarFrame)
-        toolbar.lift()
-        toolbar.update()
+        self.toolbar = None
 
 
 
 
     def draw(self):
-         
-        data = self.controller.getData()
+        print("drawing on graphView")
+        self.data = self.controller.getData()
 
         #print(data)
+        self.fig = plt.Figure()
+        self.fig.subplots_adjust(left=0.05,right=0.95,bottom=0.05,top=0.96)
+        self.ax1 = self.fig.add_subplot(111)
+
+        self.plotCanvas = FigureCanvasTkAgg(self.fig, self.container)
+        self.plotCanvas.get_tk_widget().grid(column=0, row=1, sticky=(N,S,E,W))
+
+        if self.toolbar:
+            self.toolbar.destroy()
+        self.toolbar = NavigationToolbar2Tk(self.plotCanvas, self.toolbarFrame)
+        self.toolbar.lift()
+        self.toolbar.update()
+
 
         for child in self.commandsFrame.winfo_children():
             child.destroy()        
@@ -78,14 +82,17 @@ class graphView(tk.Frame):
         setWindowSizeButton = tk.Button(self.commandsFrame,text="Set window size",command=None)
         setWindowSizeButton.grid(column=1,row=5, pady=(5,20))
 
-        saveDataButton = tk.Button(self.commandsFrame, text="Save data to csv",command=None)
+        saveDataButton = tk.Button(self.commandsFrame, text="Saveself.data to csv",command=None)
         saveDataButton.grid(column=1,row=40,pady=10)
+
+
+
 
 
 
         axes = {}
 
-        allAxesTypes = list(i.axis for i in data)
+        allAxesTypes = list(i.axis for i in self.data)
 
         #nardi dict različnih skal
         axes[allAxesTypes[0]] = self.ax1
@@ -93,8 +100,7 @@ class graphView(tk.Frame):
             if axis not in axes.keys():
                 axes[axis] = self.ax1.twinx()
 
-
-        axesTypesHashMap = list(set(i.axis for i in data))
+        axesTypesHashMap = list(set(i.axis for i in self.data))
         
         extraYs = len(list(axes.keys())[2:]) #zračuna odmik dodatnih oznak skal
         if extraYs>0:
@@ -120,19 +126,19 @@ class graphView(tk.Frame):
         colors = cycle(defaults.predefinedColors)
         line_styles = cycle(defaults.lineStyles)
         
-        for index, axisType in enumerate(allAxesTypes): #nardi line objekte
+        for index, axisType in enumerate(allAxesTypes): #nardi line objekte in jih appenda ljubemu data arrayu
             ls=next(line_styles)
             label = axisType
-            data[index].line = axes[axisType].plot([0],[0], linestyle=ls, label=label, color=data[index].color)[0]
+            self.data[index].line = axes[axisType].plot([0],[0], linestyle=ls, label=label, color=self.data[index].color)[0]
 
-        for i in data: #dummy data
+        for i in self.data: #dummy self.data
             i.line.set_data([i for i in range(5)],[random.randint(0,i*5+2) for i in range(5)])
 
 
-        axesNames = {} #nardi labele za oznake axisov
-        for line in data:
+        axesNames = {} #nardi labele za oznake axisov - unit + imena line-ov
+        for line in self.data:
             if line.axis not in axesNames.keys():
-                axesNames[line.axis] = (line.name + ", ")
+                axesNames[line.axis] = ("Unit: " + line.axis + "     Lines: " + line.name + ", ")
             else:
                 axesNames[line.axis] += line.name + " "
 
@@ -141,14 +147,18 @@ class graphView(tk.Frame):
             axis.autoscale_view()
             axis.set_ylabel(axesNames[list(axesNames.keys())[index]])
 
-        labels = [line.name for line in data]
-        lines = [line.line for line in data]
+        labels = [line.name for line in self.data]
+        lines = [line.line for line in self.data]
         axes[list(axes.keys())[0]].legend(lines,labels, loc=0) #setta legendo
+
+
+
+
 
 
         self.checkboxes = []
 
-        for index, line in enumerate(data):
+        for index, line in enumerate(self.data): #create checkboxes to toggle line visibiltiy
             lineFrame = tk.Frame(self.commandsFrame)
             lineFrame.grid(column=1, row=index+6)
 
@@ -161,4 +171,6 @@ class graphView(tk.Frame):
             lineCheckbox.grid(row=0,column=1)
 
     def toggleLineVisibility(self):
-        pass
+        for index, checkbox in enumerate(self.checkboxes):
+            self.data[index].line.set_visible(self.checkboxes[index].get())
+            self.plotCanvas.draw() #updates the graph
