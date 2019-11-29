@@ -10,7 +10,6 @@ class setupController():
         self.generatedLinesSettings = []
 
         self.consoleController = parent.getControllerRefferenceOf("console")
-        self.consoleController.printToRightConsole("test print")
         view.draw()
 
 
@@ -35,6 +34,7 @@ class setupController():
                 self.generatedLinesSettings.append(lineSetting)
         return self.generatedLinesSettings
 
+    
 
     def addLine(self): #dodaj line do te cifre ali jih samo make visible
         nrOfVisibleLines = sum(p.visibility == True for p in self.generatedLinesSettings)
@@ -77,11 +77,18 @@ class setupController():
         
 
 
-    def loadCachedLineSettings(self, path): #nalož iz cacheta - pogruntej json
+    def loadCachedLineSettings(self, path): 
         with open(path, mode="r") as cacheFile:
             jsonString = cacheFile.readline()
             #print(jsonString)
-            return(json.loads(jsonString))
+            cacheFile.close()
+            return(json.loads(jsonString)[0])
+
+    def loadBaudrateFromCache(self, path): 
+        with open(path, mode="r") as cacheFile:
+            jsonString = cacheFile.readline()
+            #print(jsonString)
+            return(json.loads(jsonString)[1])
 
     def cacheExists(self, path):
         try:

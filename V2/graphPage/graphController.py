@@ -1,29 +1,104 @@
 import graphPage.graphLine
+import defaults
+
+import serial.tools.list_ports
+import tkinter as tk
+from tkinter.ttk import Combobox
+
+from serialReader import serialReader
+
+import threading
+from apscheduler.scheduler import Scheduler
+from matplotlib.animation import FuncAnimation
+
+from time import sleep
+
 
 class graphController():
     def __init__(self, view, parent):
         self.view = view
         view.controller = self
-
-        self.rawData = []
+        self.consoleController = parent.getControllerRefferenceOf("console")
+        self.rawLineData = []
         self.data = []
-
         self.parent = parent
+        self.serialReader = None
 
-        #view.draw()
+        #self.serialReadTimer = threading.Timer(defaults.refreshRate, lambda:self.view.updateGraph(self.serialReader.readSerialBuffer()))
+ 
+        self.readingFromSerialState = True
+
+
+    def getComPort(self):
+        ports = list(serial.tools.list_ports.comports(include_links=False))
+        ports_array = []
+
+        for p in ports:
+            ports_array.append(str(p).split(" ")[0])
+        if len(ports) == 0:
+            self.consoleController.printToRightConsole("No COM ports were found")
+        elif len(ports) > 1:  #če je več com portov se odpre dialog za izbiro
+            top = tk.Toplevel()
+            top.title("Choose a COM port")
+            msg = tk.Message(top, text="Choose a COM port out of the following:")
+            msg.pack()
+
+            comportSelectionComboBox = Combobox(top,values=ports_array,state="readonly")
+            comportSelectionComboBox.pack()
+
+            port = tk.StringVar()
+            button = tk.Button(top, text="continue",command=lambda:[port.set(comportSelectionComboBox.get()), top.destroy()])
+            
+            button.pack()
+            button.wait_variable(port)
+            port = port.get()
+            self.consoleController.printToRightConsole("You chose the following comport: "+ port)
+            return port
         
+        elif len(ports) == 1:
+            self.consoleController.printToRightConsole(ports_array[0] + " found")
+            return ports_array[0]
+
 
     def setData(self, data):
-        self.rawData = data
+        self.rawLineData = data[0]
+        self.baudrate = data[1]
+        print(self.baudrate)
+        self.openSerialConnection(self.baudrate)
         self.view.draw()
-        #print(data)
+        self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=100)
+        self.animationFunc.event_source.stop()
+
+
+
+    def testFunc(self):
+        print("test func")
+
+    def openSerialConnection(self, baudrate):
+        self.comport = self.getComPort()
+        if self.comport == "": return #če ne najde comporta ne nardi nič naprej
+        self.serialReader = serialReader.serialReader()
+        self.serialReader.openSerialConnection(self.comport, baudrate)
+
+    def changeReadingFromSerialState(self):
+        
+        if not self.readingFromSerialState:
+            self.readingFromSerialState = True
+
+            self.animationFunc.event_source.start()
+            print("starting the timer")
+        else:
+            self.readingFromSerialState = False
+            self.animationFunc.event_source.stop()
+
+            print("canceling the timer")
+
 
     def getData(self):
-        if not self.rawData: return []
-        #if len(self.data) > 0: return self.data
+        if not self.rawLineData: return []
         self.data = []
-        for index, value in enumerate(self.rawData[0]):
-            graphLine = graphPage.graphLine(index, self.rawData[1][index],self.rawData[2][index], self.rawData[3][index] )  #id, name, axis, color
+        for index, value in enumerate(self.rawLineData[0]):
+            graphLine = graphPage.graphLine(index, self.rawLineData[1][index],self.rawLineData[2][index], self.rawLineData[3][index] )  #id, name, axis, color
             self.data.append(graphLine)
         return self.data
 

@@ -43,7 +43,7 @@ class graphView(tk.Frame):
 
 
     def draw(self):
-        print("drawing on graphView")
+        #print("drawing on graphView")
         self.data = self.controller.getData()
 
         #print(data)
@@ -69,7 +69,7 @@ class graphView(tk.Frame):
 
         self.playPauseLogo = tk.PhotoImage(file="img\playpause2.png")
         self.playPauseLogo = self.playPauseLogo.subsample(2,2)
-        startSerialButton = tk.Button(self.commandsFrame,image=self.playPauseLogo, command=None)
+        startSerialButton = tk.Button(self.commandsFrame,image=self.playPauseLogo, command=self.controller.changeReadingFromSerialState)
         startSerialButton.grid(column=1,row=2)
 
         windowSizeLabel = tk.Label(self.commandsFrame, text="Plotting window size:")
@@ -90,19 +90,19 @@ class graphView(tk.Frame):
 
 
 
-        axes = {}
+        self.axes = {}
 
         allAxesTypes = list(i.axis for i in self.data)
 
         #nardi dict različnih skal
-        axes[allAxesTypes[0]] = self.ax1
+        self.axes[allAxesTypes[0]] = self.ax1
         for axis in allAxesTypes[1:]:
-            if axis not in axes.keys():
-                axes[axis] = self.ax1.twinx()
+            if axis not in self.axes.keys():
+                self.axes[axis] = self.ax1.twinx()
 
         axesTypesHashMap = list(set(i.axis for i in self.data))
         
-        extraYs = len(list(axes.keys())[2:]) #zračuna odmik dodatnih oznak skal
+        extraYs = len(list(self.axes.keys())[2:]) #zračuna odmik dodatnih oznak skal
         if extraYs>0:
             temp = 0.5
             if extraYs<=2:
@@ -115,12 +115,12 @@ class graphView(tk.Frame):
             right_additive = (0.98-temp)/float(extraYs)   
 
         #dodajanje ekstra oznak skal
-        for i, ax in enumerate(list(axes.keys())[2:]):
+        for i, ax in enumerate(list(self.axes.keys())[2:]):
             #print("more than two axes, adding aditional scale")
-            axes[ax].spines['right'].set_position(('axes', 1.+right_additive*(i+1)))
-            axes[ax].set_frame_on(True)
-            axes[ax].patch.set_visible(False)
-            axes[ax].yaxis.set_major_formatter(matplotlib.ticker.OldScalarFormatter())
+            self.axes[ax].spines['right'].set_position(('axes', 1.+right_additive*(i+1)))
+            self.axes[ax].set_frame_on(True)
+            self.axes[ax].patch.set_visible(False)
+            self.axes[ax].yaxis.set_major_formatter(matplotlib.ticker.OldScalarFormatter())
 
 
         colors = cycle(defaults.predefinedColors)
@@ -129,10 +129,10 @@ class graphView(tk.Frame):
         for index, axisType in enumerate(allAxesTypes): #nardi line objekte in jih appenda ljubemu data arrayu
             ls=next(line_styles)
             label = axisType
-            self.data[index].line = axes[axisType].plot([0],[0], linestyle=ls, label=label, color=self.data[index].color)[0]
+            self.data[index].line = self.axes[axisType].plot([0],[0], linestyle=ls, label=label, color=self.data[index].color)[0]
 
-        for i in self.data: #dummy self.data
-            i.line.set_data([i for i in range(5)],[random.randint(0,i*5+2) for i in range(5)])
+        #for i in self.data: #dummy self.data
+        #    i.line.set_data([i for i in range(5)],[random.randint(0,i*5+2) for i in range(5)])
 
 
         axesNames = {} #nardi labele za oznake axisov - unit + imena line-ov
@@ -140,16 +140,17 @@ class graphView(tk.Frame):
             if line.axis not in axesNames.keys():
                 axesNames[line.axis] = ("Unit: " + line.axis + "     Lines: " + line.name + ", ")
             else:
-                axesNames[line.axis] += line.name + " "
+                axesNames[line.axis] += line.name + ", "
+            axesNames[line.axis] = axesNames[line.axis][:-2] #remova zadnjo vejico in presledek k sta odveč
 
-        for index, axis in enumerate(axes.values()): #setta labele oznak axisov in relim-a
+        for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
             axis.relim()
             axis.autoscale_view()
             axis.set_ylabel(axesNames[list(axesNames.keys())[index]])
 
         labels = [line.name for line in self.data]
         lines = [line.line for line in self.data]
-        axes[list(axes.keys())[0]].legend(lines,labels, loc=0) #setta legendo
+        self.axes[list(self.axes.keys())[0]].legend(lines,labels, loc=0) #setta legendo
 
 
 
@@ -174,3 +175,25 @@ class graphView(tk.Frame):
         for index, checkbox in enumerate(self.checkboxes):
             self.data[index].line.set_visible(self.checkboxes[index].get())
             self.plotCanvas.draw() #updates the graph
+
+    def updateGraph(self, newData):
+        #print(newData)
+        time = newData[1]
+        #print(time)
+        newData = newData[0]
+        if newData[0] == []: return
+        #print("neki")
+
+        for index, newYData in enumerate(newData):
+            #print("neki2")
+            self.data[index].YData.append(newYData)
+            #print(index)
+            #print(self.data[index].YData)
+            #zmisl si kako boš cajt beležu
+            
+            self.data[index].line.set_data(self.data[index].YData, self.data[index].YData)
+            #self.data[index].line.relim()
+            for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
+                axis.relim()
+                axis.autoscale_view()
+            #self.plotCanvas.draw()

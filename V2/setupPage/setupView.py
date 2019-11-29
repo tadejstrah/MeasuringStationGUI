@@ -17,14 +17,15 @@ class setupView(tk.Frame):
 
         self.masterContainer = tk.Frame(self, bg= "dark gray")
         self.masterContainer.grid(row=0, column=0, sticky = (N, S ,W ,E))
-        self.masterContainer.rowconfigure(2, weight=1)
+        #self.masterContainer.rowconfigure(2, weight=1)
+        self.masterContainer.rowconfigure(3, weight=1)
         self.masterContainer.rowconfigure(10, weight=1)
 
         self.linesSettingsFrame = tk.Frame(self.masterContainer, bg="dark gray")
-        self.linesSettingsFrame.grid(column=0,row=2,sticky=(N,S,W,E))
+        self.linesSettingsFrame.grid(row=3,column=0,sticky=(N), columnspan=2)
 
         self.addRemoveButtonsContainer = tk.Frame(self.masterContainer, bg="dark gray")
-        self.addRemoveButtonsContainer.grid(row=1, column = 0, sticky=( N, E,S, W))        
+        self.addRemoveButtonsContainer.grid(row=2, column=0, sticky=(N,E,W), columnspan=2)        
 
 
         self.nameLabels = []
@@ -32,6 +33,7 @@ class setupView(tk.Frame):
         self.axisComboboxes = []
         self.colorButtons = []
         
+        self.baudrateCombobox = None
 
     def draw(self):
 
@@ -92,7 +94,12 @@ class setupView(tk.Frame):
         goToNextPageButton = tk.Button(self.masterContainer, text="Go to graph page", command=lambda:self.controller.goToGraphPage())
         goToNextPageButton.grid(column=0, row=10, sticky = (W, S), pady=20, padx=10)
 
+        label = tk.Label(self.masterContainer, text="Choose baudrate")
+        label.grid(column=0, row=1, padx=10, sticky=(W,E))
 
+        self.baudrateCombobox = Combobox(self.masterContainer, state="readonly", values=defaults.baudrates)
+        self.baudrateCombobox.set(self.controller.loadBaudrateFromCache(defaults.cachedSettingsPath))
+        self.baudrateCombobox.grid(column=1, row=1, sticky=(N,S,W,E))
 
     def getData(self):
         labels, names, axes, colors = [], [], [], []
@@ -103,7 +110,7 @@ class setupView(tk.Frame):
                 axes.append(self.axisComboboxes[index].get())
                 colors.append(self.colorButtons[index]['background'])
         #print("get data:" + str([labels, names, axes, colors]))
-        return[labels, names, axes, colors]
+        return[[labels, names, axes, colors], self.baudrateCombobox.get()]
 
     def chooseColor(self,event):
         color = askcolor()[1]
