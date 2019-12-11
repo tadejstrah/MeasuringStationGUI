@@ -23,8 +23,6 @@ class graphController():
         self.data = []
         self.parent = parent
         self.serialReader = None
-
-        #self.serialReadTimer = threading.Timer(defaults.refreshRate, lambda:self.view.updateGraph(self.serialReader.readSerialBuffer()))
  
         self.readingFromSerialState = True
 
@@ -62,37 +60,31 @@ class graphController():
 
     def setData(self, data):
         self.rawLineData = data[0]
+        self.view.draw()
+
         self.baudrate = data[1]
         print(self.baudrate)
         self.openSerialConnection(self.baudrate)
-        self.view.draw()
         self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=100)
-        self.animationFunc.event_source.stop()
+        #self.animationFunc.event_source.stop()
 
 
-
-    def testFunc(self):
-        print("test func")
 
     def openSerialConnection(self, baudrate):
         self.comport = self.getComPort()
         if self.comport == "": return #če ne najde comporta ne nardi nič naprej
-        self.serialReader = serialReader.serialReader()
+        self.serialReader = serialReader.serialReader(self, len(self.data))
         self.serialReader.openSerialConnection(self.comport, baudrate)
 
     def changeReadingFromSerialState(self):
-        
         if not self.readingFromSerialState:
             self.readingFromSerialState = True
-
             self.animationFunc.event_source.start()
-            print("starting the timer")
+            self.consoleController.printToRightConsole("Starting serial reader")
         else:
             self.readingFromSerialState = False
             self.animationFunc.event_source.stop()
-
-            print("canceling the timer")
-
+            self.consoleController.printToRightConsole("Pausing serial reader")
 
     def getData(self):
         if not self.rawLineData: return []

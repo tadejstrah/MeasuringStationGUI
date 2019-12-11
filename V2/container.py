@@ -10,10 +10,7 @@ class container(tk.Frame):
         self.__initedFrameNames = []
 
     def showPage(self,name,frame):
-        #print()
-        #print("showPage: " + name)
         if name in self.__initedFrameNames:
-            #print(frame)
             self.__frames[name][1].tkraise()
             self.__frames[name][1].grid(row=0, column=0, sticky = "N S W E")
 
@@ -21,9 +18,6 @@ class container(tk.Frame):
             page = self.__initPage(name, frame)
             self.__initedFrameNames.append(name)
             self.__frames[name][1].tkraise()
-
-
-
 
     def __initPage(self,name,frame):
 
@@ -37,10 +31,8 @@ class container(tk.Frame):
         initedView.grid(row=0, column=0, sticky= "N S W E")
         initedView.rowconfigure(0,weight=1)
         initedView.columnconfigure(0,weight=1)
-        #print("InitedView: " + str(initedView))
         
         initedController = controllerClass(initedView, self)
-        #initedView.controller = initedController
         
         self.__frames[name] = (initedController, initedView,)
         return initedView

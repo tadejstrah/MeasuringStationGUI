@@ -22,7 +22,8 @@ class graphView(tk.Frame):
         self.controller = None
 
 
-        
+        self.data = None
+        self.time = []
 
         self.container = tk.Frame(self)
         self.container.grid(row=0, column=0, sticky = (N, S ,W ,E))
@@ -82,11 +83,8 @@ class graphView(tk.Frame):
         setWindowSizeButton = tk.Button(self.commandsFrame,text="Set window size",command=None)
         setWindowSizeButton.grid(column=1,row=5, pady=(5,20))
 
-        saveDataButton = tk.Button(self.commandsFrame, text="Saveself.data to csv",command=None)
+        saveDataButton = tk.Button(self.commandsFrame, text="Save data to csv",command=None)
         saveDataButton.grid(column=1,row=40,pady=10)
-
-
-
 
 
 
@@ -116,12 +114,10 @@ class graphView(tk.Frame):
 
         #dodajanje ekstra oznak skal
         for i, ax in enumerate(list(self.axes.keys())[2:]):
-            #print("more than two axes, adding aditional scale")
             self.axes[ax].spines['right'].set_position(('axes', 1.+right_additive*(i+1)))
             self.axes[ax].set_frame_on(True)
             self.axes[ax].patch.set_visible(False)
             self.axes[ax].yaxis.set_major_formatter(matplotlib.ticker.OldScalarFormatter())
-
 
         colors = cycle(defaults.predefinedColors)
         line_styles = cycle(defaults.lineStyles)
@@ -130,10 +126,6 @@ class graphView(tk.Frame):
             ls=next(line_styles)
             label = axisType
             self.data[index].line = self.axes[axisType].plot([0],[0], linestyle=ls, label=label, color=self.data[index].color)[0]
-
-        #for i in self.data: #dummy self.data
-        #    i.line.set_data([i for i in range(5)],[random.randint(0,i*5+2) for i in range(5)])
-
 
         axesNames = {} #nardi labele za oznake axisov - unit + imena line-ov
         for line in self.data:
@@ -153,10 +145,6 @@ class graphView(tk.Frame):
         self.axes[list(self.axes.keys())[0]].legend(lines,labels, loc=0) #setta legendo
 
 
-
-
-
-
         self.checkboxes = []
 
         for index, line in enumerate(self.data): #create checkboxes to toggle line visibiltiy
@@ -173,27 +161,32 @@ class graphView(tk.Frame):
 
     def toggleLineVisibility(self):
         for index, checkbox in enumerate(self.checkboxes):
-            self.data[index].line.set_visible(self.checkboxes[index].get())
+            self.data[index].line.set_visible(self.checkboxes[index].get()) #set line's visibilityb
             self.plotCanvas.draw() #updates the graph
 
     def updateGraph(self, newData):
         #print(newData)
+        #return
+        if len(newData)==0: return
         time = newData[1]
-        #print(time)
         newData = newData[0]
-        if newData[0] == []: return
-        #print("neki")
+        #if len(newData[0]) == 0: return
+        for t in time:
+            self.time.append(t)
 
         for index, newYData in enumerate(newData):
-            #print("neki2")
-            self.data[index].YData.append(newYData)
+            if index < len(self.data)-1:
+                #print(newData)
+                self.data[index].YData.append(newYData)
+            else:return
             #print(index)
-            #print(self.data[index].YData)
-            #zmisl si kako boš cajt beležu
-            
-            self.data[index].line.set_data(self.data[index].YData, self.data[index].YData)
-            #self.data[index].line.relim()
+           # print(self.data[index].YData)
+           # print("time: "+str(self.time))
+            print("time")
+            print(self.time[0:len(self.data[index].YData)])
+            print("data")
+            print(self.data[index].YData)
+            self.data[index].line.set_data(self.time[0:len(self.data[index].YData)], self.data[index].YData)
             for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
                 axis.relim()
                 axis.autoscale_view()
-            #self.plotCanvas.draw()
