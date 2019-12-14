@@ -63,16 +63,16 @@ class graphController():
         self.view.draw()
 
         self.baudrate = data[1]
-        print(self.baudrate)
         self.openSerialConnection(self.baudrate)
+        if self.serialReader == None:
+            return
         self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=100)
-        #self.animationFunc.event_source.stop()
 
 
 
     def openSerialConnection(self, baudrate):
         self.comport = self.getComPort()
-        if self.comport == "": return #če ne najde comporta ne nardi nič naprej
+        if self.comport == None: return #če ne najde comporta ne nardi nič naprej
         self.serialReader = serialReader.serialReader(self, len(self.data))
         self.serialReader.openSerialConnection(self.comport, baudrate)
 
@@ -96,3 +96,5 @@ class graphController():
 
     def goToSetupPage(self):
         self.parent.showPage("setup", self)
+        if self.serialReader != None:
+            self.serialReader.closeSerialConnection()

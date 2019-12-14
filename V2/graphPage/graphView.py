@@ -47,6 +47,8 @@ class graphView(tk.Frame):
         #print("drawing on graphView")
         self.data = self.controller.getData()
 
+
+
         #print(data)
         self.fig = plt.Figure()
         self.fig.subplots_adjust(left=0.05,right=0.95,bottom=0.05,top=0.96)
@@ -142,7 +144,7 @@ class graphView(tk.Frame):
 
         labels = [line.name for line in self.data]
         lines = [line.line for line in self.data]
-        self.axes[list(self.axes.keys())[0]].legend(lines,labels, loc=0) #setta legendo
+        self.axes[list(self.axes.keys())[0]].legend(lines,labels, loc=1) #setta legendo
 
 
         self.checkboxes = []
@@ -165,28 +167,38 @@ class graphView(tk.Frame):
             self.plotCanvas.draw() #updates the graph
 
     def updateGraph(self, newData):
-        #print(newData)
-        #return
-        if len(newData)==0: return
-        time = newData[1]
-        newData = newData[0]
-        #if len(newData[0]) == 0: return
-        for t in time:
-            self.time.append(t)
+        #print("updating graph")
+        #print("newData[0]:", str(newData[0]))
+        #print("newData[1]:", str(newData[1]))
 
-        for index, newYData in enumerate(newData):
-            if index < len(self.data)-1:
-                #print(newData)
-                self.data[index].YData.append(newYData)
-            else:return
-            #print(index)
-           # print(self.data[index].YData)
-           # print("time: "+str(self.time))
-            print("time")
-            print(self.time[0:len(self.data[index].YData)])
-            print("data")
-            print(self.data[index].YData)
-            self.data[index].line.set_data(self.time[0:len(self.data[index].YData)], self.data[index].YData)
-            for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
-                axis.relim()
-                axis.autoscale_view()
+        if len(newData)==0: return
+        newTime = newData[1]
+        newData = newData[0]
+
+        for t in newTime:
+            try: floatOfTime = float(t)
+            except: floatOfTime = 0.0
+            self.time.append(floatOfTime)
+
+        #print(newData)
+
+        for index, oneLineOfNewData in enumerate(newData):
+            print(self.time[-1],oneLineOfNewData)
+            for index2,paramValue in enumerate(oneLineOfNewData):  #param value je recimo vrednost napetosti v eni od prejetih vrstic v newData
+                if index2 > len(self.data)-1: #če je index out of range, menaing da na grafu ni tolko črt kot jih dobi program iz seriala
+                    print("?")
+                    break
+                try: floatOfParamValue = float(paramValue)
+                except: floatOfParamValue = 0.0 #default value
+                self.data[index2].YData.append(floatOfParamValue)
+
+        for line in self.data:
+            #print(self.time[0:len(line.YData)])
+            #print(line.YData)
+            line.line.set_data(self.time[0:len(line.YData)], line.YData)
+            pass
+
+        for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
+            axis.relim()
+            axis.autoscale_view()
+        

@@ -106,7 +106,7 @@ class setupController():
             cacheFile.close()
 
 
-    def openFile(self, path):
+    def openFile(self):
         print("implement open file")
         pass
 
