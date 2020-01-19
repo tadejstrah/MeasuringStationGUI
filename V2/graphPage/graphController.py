@@ -98,3 +98,11 @@ class graphController():
         self.parent.showPage("setup", self)
         if self.serialReader != None:
             self.serialReader.closeSerialConnection()
+
+    def saveDataToFile(self):
+        pass
+
+    def setWindowSize(self, windowSize):
+        if str.isdigit(windowSize):
+            self.view.setWindowSize(float(windowSize))
+            self.consoleController.printToRightConsole("Setting windowSize to %s" % windowSize)

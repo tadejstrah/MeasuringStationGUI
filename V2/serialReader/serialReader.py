@@ -64,7 +64,7 @@ class serialReader():
                 inputArr = tempStr.strip().split("\t")
                 tempStr = ""
                 #print(inputArr)
-                if len(inputArr) != self.nrOfLines+1:
+                if len(inputArr) < self.nrOfLines+1:
                     #print(inputArr)
                     #print("len(inputArr) != self.nrOfLines+1")
                     pass
@@ -79,7 +79,7 @@ class serialReader():
                     
 
         arrToReturn = [yDataToReturn, timeArr]
-
+        #print(arrToReturn)
         return arrToReturn
 
 

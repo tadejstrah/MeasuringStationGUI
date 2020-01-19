@@ -20,7 +20,7 @@ class graphView(tk.Frame):
 
         self.parent = parent
         self.controller = None
-
+        self.consoleController = parent.getControllerRefferenceOf("console")
 
         self.data = None
         self.time = []
@@ -40,16 +40,13 @@ class graphView(tk.Frame):
 
         self.toolbar = None
 
-
+        self.windowSize = 50 #default
 
 
     def draw(self):
         #print("drawing on graphView")
         self.data = self.controller.getData()
 
-
-
-        #print(data)
         self.fig = plt.Figure()
         self.fig.subplots_adjust(left=0.05,right=0.95,bottom=0.05,top=0.96)
         self.ax1 = self.fig.add_subplot(111)
@@ -82,10 +79,10 @@ class graphView(tk.Frame):
         windowSizeEntry.insert(0, 30) #default value 
         windowSizeEntry.grid(column=1,row=4,pady=(5,5))
 
-        setWindowSizeButton = tk.Button(self.commandsFrame,text="Set window size",command=None)
+        setWindowSizeButton = tk.Button(self.commandsFrame,text="Set window size",command=lambda:self.controller.setWindowSize(windowSizeEntry.get()))
         setWindowSizeButton.grid(column=1,row=5, pady=(5,20))
 
-        saveDataButton = tk.Button(self.commandsFrame, text="Save data to csv",command=None)
+        saveDataButton = tk.Button(self.commandsFrame, text="Save data to .json file",command=self.controller.saveDataToFile)
         saveDataButton.grid(column=1,row=40,pady=10)
 
 
@@ -132,7 +129,7 @@ class graphView(tk.Frame):
         axesNames = {} #nardi labele za oznake axisov - unit + imena line-ov
         for line in self.data:
             if line.axis not in axesNames.keys():
-                axesNames[line.axis] = ("Unit: " + line.axis + "     Lines: " + line.name + ", ")
+                axesNames[line.axis] = ("Unit: " + line.axis + "     Lines: " + line.name + " , ")
             else:
                 axesNames[line.axis] += line.name + ", "
             axesNames[line.axis] = axesNames[line.axis][:-2] #remova zadnjo vejico in presledek k sta odveč
@@ -166,6 +163,10 @@ class graphView(tk.Frame):
             self.data[index].line.set_visible(self.checkboxes[index].get()) #set line's visibilityb
             self.plotCanvas.draw() #updates the graph
 
+    def setWindowSize(self, windowSize):
+        self.windowSize = windowSize
+        
+
     def updateGraph(self, newData):
         #print("updating graph")
         #print("newData[0]:", str(newData[0]))
@@ -177,28 +178,26 @@ class graphView(tk.Frame):
 
         for t in newTime:
             try: floatOfTime = float(t)
-            except: floatOfTime = 0.0
+            except: floatOfTime = self.time[-1] #če conversion faila da default time[-1]
             self.time.append(floatOfTime)
-
         #print(newData)
 
         for index, oneLineOfNewData in enumerate(newData):
-            print(self.time[-1],oneLineOfNewData)
+            self.consoleController.printToLeftConsole("Time: \t"+ str(self.time[-1]) + "\t Values: "+ "".join("\t"+i for i in oneLineOfNewData) + "\t")
             for index2,paramValue in enumerate(oneLineOfNewData):  #param value je recimo vrednost napetosti v eni od prejetih vrstic v newData
                 if index2 > len(self.data)-1: #če je index out of range, menaing da na grafu ni tolko črt kot jih dobi program iz seriala
-                    print("?")
                     break
                 try: floatOfParamValue = float(paramValue)
                 except: floatOfParamValue = 0.0 #default value
                 self.data[index2].YData.append(floatOfParamValue)
 
         for line in self.data:
-            #print(self.time[0:len(line.YData)])
-            #print(line.YData)
             line.line.set_data(self.time[0:len(line.YData)], line.YData)
-            pass
+            
 
         for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
+            if self.windowSize < self.time[-1]:
+                axis.set_xlim(self.time[-1]-self.windowSize, self.time[-1])
             axis.relim()
             axis.autoscale_view()
         
