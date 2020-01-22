@@ -165,7 +165,9 @@ class graphView(tk.Frame):
 
     def setWindowSize(self, windowSize):
         self.windowSize = windowSize
-        
+    
+    def getLastTimeValue(self):
+        return self.time[-1]
 
     def updateGraph(self, newData):
         #print("updating graph")

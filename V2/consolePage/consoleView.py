@@ -15,7 +15,7 @@ class consoleView(tk.Frame):
         openFileButton.grid(padx=10,pady=10, row=0, column=0)    
         
 
-        self.dataConsole = tk.Text(self.frame, borderwidth=3, state="disabled")
+        self.dataConsole = tk.Text(self.frame, borderwidth=3, state="normal")
         self.dataConsole.config(undo=True,wrap="word")
         self.dataConsole.grid(row=0,column=0,sticky=(S,W,E),padx=2,pady=2)
 
@@ -33,10 +33,10 @@ class consoleView(tk.Frame):
         self.notificationsConsole["yscrollcommand"] = notificationConsoleScrollbar.set
 
     def printToLeftConsole(self, string):
-        self.dataConsole.configure(state = "normal")
+        #self.dataConsole.configure(state = "normal") #changing state with every write cycle slows down the program dramatically. I will just have to live with the state being on normal all the time
         self.dataConsole.insert(END, string + "\n")
         self.dataConsole.see("end")
-        self.dataConsole.configure(state="disabled")
+        #self.dataConsole.configure(state="disabled")
 
     def printToRightConsole(self, string):
         self.notificationsConsole.configure(state="normal")

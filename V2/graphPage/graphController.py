@@ -66,9 +66,7 @@ class graphController():
         self.openSerialConnection(self.baudrate)
         if self.serialReader == None:
             return
-        self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=100)
-
-
+        self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=defaults.animationRefreshRate)
 
     def openSerialConnection(self, baudrate):
         self.comport = self.getComPort()
@@ -78,6 +76,10 @@ class graphController():
 
     def changeReadingFromSerialState(self):
         if not self.readingFromSerialState:
+            self.serialReader.clearSerialBuffer()
+            self.serialReader.setPrevTime(self.view.getLastTimeValue())
+            self.serialReader.shouldCalcTimeDiff = True
+
             self.readingFromSerialState = True
             self.animationFunc.event_source.start()
             self.consoleController.printToRightConsole("Starting serial reader")
