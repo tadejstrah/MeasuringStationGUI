@@ -67,7 +67,7 @@ class graphView(tk.Frame):
         backToSetupPageButton = tk.Button(self.commandsFrame, text="Back to setup page", command=self.controller.goToSetupPage)
         backToSetupPageButton.grid(column=1, row=1, pady=10)
 
-        self.playPauseLogo = tk.PhotoImage(file="img\playpause2.png")
+        self.playPauseLogo = tk.PhotoImage(file="./img/playpause2.png")
         self.playPauseLogo = self.playPauseLogo.subsample(2,2)
         startSerialButton = tk.Button(self.commandsFrame,image=self.playPauseLogo, command=self.controller.changeReadingFromSerialState)
         startSerialButton.grid(column=1,row=2)

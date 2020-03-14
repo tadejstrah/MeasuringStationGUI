@@ -8,7 +8,6 @@ from tkinter.ttk import Combobox
 from serialReader import serialReader
 
 import threading
-from apscheduler.scheduler import Scheduler
 from matplotlib.animation import FuncAnimation
 
 from time import sleep
