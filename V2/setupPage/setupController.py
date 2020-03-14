@@ -2,6 +2,8 @@ import defaults
 import setupPage.lineSettings
 import json
 
+import easygui
+
 class setupController():
     def __init__(self, view, parent):
         self.view = view
@@ -84,11 +86,14 @@ class setupController():
             cacheFile.close()
             return(json.loads(jsonString)[0])
 
-    def loadBaudrateFromCache(self, path): 
-        with open(path, mode="r") as cacheFile:
-            jsonString = cacheFile.readline()
-            #print(jsonString)
-            return(json.loads(jsonString)[1])
+    def loadBaudrateFromCache(self, path):
+        if self.cacheExists(path): 
+            with open(path, mode="r") as cacheFile:
+                jsonString = cacheFile.readline()
+                #print(jsonString)
+                return(json.loads(jsonString)[1])
+        else: 
+            return 38400
 
     def cacheExists(self, path):
         try:
@@ -107,11 +112,36 @@ class setupController():
 
 
     def openFile(self):
-        print("implement open file")
-        pass
 
-    def goToGraphPage(self):
-        data = self.view.getData()
+        openFileName = easygui.fileopenbox()
+
+        with open (openFileName, mode="r") as inputFile:
+            jsonString = inputFile.readline()
+            data = json.loads(jsonString)[0]
+            #print(jsonString)
+
+            labels = []
+            names = []
+            axes = []
+            colors = []
+            for line in data:
+                #print(line)
+                labels.append(line[1])
+                names.append(line[1])
+                axes.append(line[2])
+                colors.append(line[3])
+        self.goToGraphPage(openFileData = [labels, names, axes, colors])
+
+
+    def goToGraphPage(self, **kwargs):
+        if "openFileData" in kwargs.keys():
+            if kwargs["openFileData"] != None:
+                data = [kwargs["openFileData"], self.view.getData()[1]]
+            else: data = []
+        else:
+            data = self.view.getData()  #return[[labels, names, axes, colors], self.baudrateCombobox.get()]
+ 
         self.saveSettingsToCache(defaults.cachedSettingsPath,data)
         self.parent.showPage("graph", self.view) #inits and transitions
         self.parent.getControllerRefferenceOf("graph").setData(data)
+        

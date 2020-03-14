@@ -13,6 +13,8 @@ from matplotlib.animation import FuncAnimation
 
 from time import sleep
 
+import easygui
+from datetime import datetime
 
 class graphController():
     def __init__(self, view, parent):
@@ -101,8 +103,30 @@ class graphController():
         if self.serialReader != None:
             self.serialReader.closeSerialConnection()
 
-    def saveDataToFile(self):
-        pass
+    def saveDataToFile(self, data):
+        import os
+        import json 
+
+        filename = easygui.filesavebox(default=datetime.now().strftime("%Y-%m-%d_%H-%M")+".txt", filetypes=["*.txt"])
+
+        if not filename: 
+            self.consoleController.printToRightConsole("Couldn's save file. Filename not provided.")
+            return
+
+        with open(filename, mode="w+") as saveFile:
+            
+            linesStringified = []
+            for line in data[0]:
+                linesStringified.append(line.stringify())
+
+            jsonString = json.dumps([linesStringified, data[1]])
+            saveFile.write(jsonString)
+            saveFile.close()
+
+            self.consoleController.printToRightConsole("Successfully saved the data")
+        if self.serialReader:
+            self.serialReader.readingFromSerialState = False
+        
 
     def setWindowSize(self, windowSize):
         if str.isdigit(windowSize):

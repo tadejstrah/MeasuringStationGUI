@@ -69,6 +69,7 @@ class setupView(tk.Frame):
                 axisCombobox.grid(row=index, column=2, pady=pady, padx=padx)
                 self.axisComboboxes.append(axisCombobox)
 
+                #print(line.color)
                 colorButton = tk.Button(self.linesSettingsFrame, text="Choose color", bg=line.color)
                 colorButton.bind('<Button-1>', self.chooseColor)
                 colorButton.grid(row=index, column=3, padx=padx, pady=pady)
@@ -105,7 +106,7 @@ class setupView(tk.Frame):
         labels, names, axes, colors = [], [], [], []
         for index, value in enumerate(self.nameLabels):
             if  self.linesSettings[index].visibility: 
-                labels.append(self.nameLabels[index]['text'])
+                labels.append(self.nameLabels[index]['text']) 
                 names.append(self.nameInputs[index].get())
                 axes.append(self.axisComboboxes[index].get())
                 colors.append(self.colorButtons[index]['background'])

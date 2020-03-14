@@ -16,8 +16,6 @@ class serialReader():
         self.initialTimeDiff = 0
 
     def openSerialConnection(self, comPort, baudrate):
-        #self.serialConn = serial.Serial(comPort, baudrate)
-
         self.serialConn = serial.Serial()
         self.serialConn.port = comPort
         self.serialConn.baudrate = baudrate
@@ -51,21 +49,19 @@ class serialReader():
             self.console.printToRightConsole("Serial connection not open, pausing serial reader")
             return []
 
-        rawInputString = ""
-        timeArr = []
-        yDataToReturn = []
+        rawInputString = "" #to-be-parsed raw input
+        timeArr = [] #arr that will store time data (graph x-axis)
+        yDataToReturn = []  #arr that will store actual values (graph y-axes)
 
 
-        while self.serialConn.in_waiting > 0:
+        while self.serialConn.in_waiting > 0:  #read and decode data from serial buffer
             inputByte = self.serialConn.read()
             try:rawInputString += inputByte.decode("utf-8")
             except:self.console.printToRightConsole("Couldn't decode received data")
 
 
 
-        tempStr = self.prevStr
-        timeArr = []
-        yDataToReturn = []
+        tempStr = self.prevStr  #temp str, just used while parsing - what stays in the tempStr after the last \n of the batch is the data that will probaby be sent in next batch
 
         for char in rawInputString:
             if char != "\n":
@@ -73,21 +69,18 @@ class serialReader():
             else:
                 inputArr = tempStr.strip().split("\t")
                 tempStr = ""
-                print(inputArr)
                 if len(inputArr) < self.nrOfLines+1:
-                    pass
+                    return []
                 else:
 
                     if self.firstTime: #če se prvič izvede tale rutina in arduino pač ne pošiljša številk od nule, se prvič time diff nastavi kar na prejeto vrednost časa (da se jo potem odšteje/ nastavi kot offset)
                         self.timeDiff = float(inputArr[0])
-                        #print("first time time diff %d" % self.timeDiff)
                         self.firstTime = False
 
                     elif self.shouldCalcTimeDiff: 
                         temp = self.timeDiff
                         self.timeDiff = (float(inputArr[0]) - float(self.prevTime))
                         if self.timeDiff - temp < 0:
-                            print("dfghjklčć",self.timeDiff - temp)
                             self.timeDiff = temp
                             return []
                         #print("self.timeDiff += (float(inputArr[0]) - float(self.prevTime)) : %3d += (%3d - %3d)" % (float(self.timeDiff), float(inputArr[0]), float(self.prevTime)))
@@ -98,12 +91,9 @@ class serialReader():
                     yData = inputArr[1:]
                     yDataToReturn.append(yData)
                     timeArr.append(timeVal)
-        self.prevStr = tempStr
-        #print(tempStr)
-                    
+        self.prevStr = tempStr                    
 
         arrToReturn = [yDataToReturn, timeArr]
-        #print(arrToReturn)
         return arrToReturn
 
 

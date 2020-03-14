@@ -82,7 +82,7 @@ class graphView(tk.Frame):
         setWindowSizeButton = tk.Button(self.commandsFrame,text="Set window size",command=lambda:self.controller.setWindowSize(windowSizeEntry.get()))
         setWindowSizeButton.grid(column=1,row=5, pady=(5,20))
 
-        saveDataButton = tk.Button(self.commandsFrame, text="Save data to .json file",command=self.controller.saveDataToFile)
+        saveDataButton = tk.Button(self.commandsFrame, text="Save data to .json file",command=lambda:self.controller.saveDataToFile([self.data, self.time]))
         saveDataButton.grid(column=1,row=40,pady=10)
 
 
@@ -168,6 +168,7 @@ class graphView(tk.Frame):
     
     def getLastTimeValue(self):
         return self.time[-1]
+
 
     def updateGraph(self, newData):
         #print("updating graph")
