@@ -59,18 +59,43 @@ class graphController():
             return ports_array[0]
 
 
-    def setData(self, data):
+    def setData(self, data, **kwargs):
         self.rawLineData = data[0]
         self.view.draw()
 
+        if "values" in kwargs.keys():
+            #pass
+            #print(kwargs["values"])
+            temp = []
+
+            nrOfLines = len(kwargs["values"][0])
+            for index, value in enumerate(kwargs["values"][0][0]):
+                temp.append([kwargs["values"][0][i][index] for i in range(nrOfLines)])
+
+
+            time = kwargs["values"][1]
+            #print(values)
+            #print(time)
+            self.view.updateGraph([temp, time])
+
+
         self.baudrate = data[1]
         self.openSerialConnection(self.baudrate)
+
+
         if self.serialReader == None:
+            print("serialReader = None")
             return
-        self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=defaults.animationRefreshRate)
+            
+        if "values" not in kwargs.keys():
+            #print("values not in kwargs")
+            self.animationFunc = FuncAnimation(self.view.fig, lambda x:self.view.updateGraph(self.serialReader.readSerialBuffer()), interval=defaults.refreshRate, repeat=True, repeat_delay=defaults.animationRefreshRate)
+
+
 
     def openSerialConnection(self, baudrate):
         self.comport = self.getComPort()
+
         if self.comport == None: return #če ne najde comporta ne nardi nič naprej
         self.serialReader = serialReader.serialReader(self, len(self.data))
         self.serialReader.openSerialConnection(self.comport, baudrate)
@@ -84,6 +109,7 @@ class graphController():
             self.readingFromSerialState = True
             self.animationFunc.event_source.start()
             self.consoleController.printToRightConsole("Starting serial reader")
+            
         else:
             self.readingFromSerialState = False
             self.animationFunc.event_source.stop()

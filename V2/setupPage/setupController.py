@@ -117,31 +117,56 @@ class setupController():
 
         with open (openFileName, mode="r") as inputFile:
             jsonString = inputFile.readline()
-            data = json.loads(jsonString)[0]
+            temp = json.loads(jsonString)
+            data = temp[0]
+            time = temp[1]
             #print(jsonString)
 
             labels = []
             names = []
             axes = []
             colors = []
+            values = []
             for line in data:
                 #print(line)
                 labels.append(line[1])
                 names.append(line[1])
                 axes.append(line[2])
                 colors.append(line[3])
-        self.goToGraphPage(openFileData = [labels, names, axes, colors])
+                values.append(line[4])
+            
+        self.goToGraphPage(openFileLinesData = [labels, names, axes, colors], valuesData=[values, time])
 
 
     def goToGraphPage(self, **kwargs):
-        if "openFileData" in kwargs.keys():
-            if kwargs["openFileData"] != None:
-                data = [kwargs["openFileData"], self.view.getData()[1]]
+        values = None
+        time = None
+        if "openFileLinesData" in kwargs.keys():
+            if kwargs["openFileLinesData"] != None:
+                data = [kwargs["openFileLinesData"], self.view.getData()[1]]
+                #print(self.view.getData()[1])
             else: data = []
+
+        if "valuesData" in kwargs.keys():
+            if kwargs["valuesData"] != None:
+                #print(kwargs["valuesData"])
+                values = kwargs["valuesData"][0]
+                time = kwargs["valuesData"][1]
+
+                # print(kwargs["valuesData"])
+                #data = [kwargs["valuesData"], self.view.getData()[1]]
+                #print(self.view.getData()[1])
+            else: data = []     
+
         else:
             data = self.view.getData()  #return[[labels, names, axes, colors], self.baudrateCombobox.get()]
  
+
         self.saveSettingsToCache(defaults.cachedSettingsPath,data)
         self.parent.showPage("graph", self.view) #inits and transitions
-        self.parent.getControllerRefferenceOf("graph").setData(data)
+
+        if values != None:
+            self.parent.getControllerRefferenceOf("graph").setData(data, values=[values, time])
+        else:
+            self.parent.getControllerRefferenceOf("graph").setData(data)
         

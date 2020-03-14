@@ -21,7 +21,7 @@ class graphView(tk.Frame):
         self.parent = parent
         self.controller = None
         self.consoleController = parent.getControllerRefferenceOf("console")
-
+        
         self.data = None
         self.time = []
 
@@ -167,6 +167,7 @@ class graphView(tk.Frame):
         self.windowSize = windowSize
     
     def getLastTimeValue(self):
+        if len(self.time) == 0: return 0
         return self.time[-1]
 
 
@@ -183,10 +184,9 @@ class graphView(tk.Frame):
             try: floatOfTime = float(t)
             except: floatOfTime = self.time[-1] #če conversion faila da default time[-1]
             self.time.append(floatOfTime)
-        #print(newData)
 
         for index, oneLineOfNewData in enumerate(newData):
-            self.consoleController.printToLeftConsole("Time: \t"+ str(self.time[-1]) + "\t Values: "+ "".join("\t"+i for i in oneLineOfNewData) + "\t")
+            self.consoleController.printToLeftConsole("Time: \t"+ str(self.time[-1]) + "\t Values: "+ "".join("\t"+str(i) for i in oneLineOfNewData) + "\t")
             for index2,paramValue in enumerate(oneLineOfNewData):  #param value je recimo vrednost napetosti v eni od prejetih vrstic v newData
                 if index2 > len(self.data)-1: #če je index out of range, menaing da na grafu ni tolko črt kot jih dobi program iz seriala
                     break
@@ -196,9 +196,9 @@ class graphView(tk.Frame):
 
         for line in self.data:
             line.line.set_data(self.time[0:len(line.YData)], line.YData)
-            
 
         for index, axis in enumerate(self.axes.values()): #setta labele oznak axisov in relim-a
+            if len(self.time) == 0: return
             if self.windowSize < self.time[-1]:
                 axis.set_xlim(self.time[-1]-self.windowSize, self.time[-1])
             axis.relim()

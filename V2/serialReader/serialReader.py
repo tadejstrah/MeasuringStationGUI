@@ -19,6 +19,7 @@ class serialReader():
         self.serialConn = serial.Serial()
         self.serialConn.port = comPort
         self.serialConn.baudrate = baudrate
+        #print(baudrate)
         self.serialConn.setDTR(False)
         self.serialConn.open()
 
@@ -75,6 +76,8 @@ class serialReader():
 
                     if self.firstTime: #če se prvič izvede tale rutina in arduino pač ne pošiljša številk od nule, se prvič time diff nastavi kar na prejeto vrednost časa (da se jo potem odšteje/ nastavi kot offset)
                         self.timeDiff = float(inputArr[0])
+                        #print("setting firstTime value to %d" % self.timeDiff)
+
                         self.firstTime = False
 
                     elif self.shouldCalcTimeDiff: 

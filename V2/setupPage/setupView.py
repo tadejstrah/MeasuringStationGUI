@@ -35,6 +35,7 @@ class setupView(tk.Frame):
         
         self.baudrateCombobox = None
 
+
     def draw(self):
 
 
